@@ -1,0 +1,259 @@
+JOB_TYPE,JOB_ECLS_GROUP,JOB_ECLS_FT_PT,PEAFACT_RANK_DESC,TENURE_DESC,GENDER,computed_race,telework,total
+Faculty,Administrators/Deans,Full-time,Associate Professor,Tenured,Male,"White, Non-Hispanic Only",No,2
+Faculty,Administrators/Deans,Full-time,Professor,Tenured,Female,"White, Non-Hispanic Only",No,4
+Faculty,Administrators/Deans,Full-time,Professor,Tenured,Male,"Black, Non-Hispanic Only",No,1
+Faculty,Administrators/Deans,Full-time,Professor,Tenured,Male,"White, Non-Hispanic Only",No,8
+Faculty,Chairs,Full-time,Assistant Professor,On Tenure Track,Female,"White, Non-Hispanic Only",Yes,2
+Faculty,Chairs,Full-time,Assistant Professor,On Tenure Track,Male,"White, Non-Hispanic Only",No,1
+Faculty,Chairs,Full-time,Associate Professor,On Tenure Track,Female,"White, Non-Hispanic Only",No,1
+Faculty,Chairs,Full-time,Associate Professor,Tenured,Female,Two or More Races,No,1
+Faculty,Chairs,Full-time,Associate Professor,Tenured,Male,"Asian, Non-Hispanic Only",No,1
+Faculty,Chairs,Full-time,Associate Professor,Tenured,Male,"White, Non-Hispanic Only",No,4
+Faculty,Chairs,Full-time,Professor,Tenured,Female,"Black, Non-Hispanic Only",No,3
+Faculty,Chairs,Full-time,Professor,Tenured,Female,"White, Non-Hispanic Only",No,13
+Faculty,Chairs,Full-time,Professor,Tenured,Male,"Asian, Non-Hispanic Only",No,1
+Faculty,Chairs,Full-time,Professor,Tenured,Male,"White, Non-Hispanic Only",No,8
+Faculty,Fulltime Faculty,Full-time,None,Ineligible,Female,"White, Non-Hispanic Only",No,3
+Faculty,Fulltime Faculty,Full-time,None,Ineligible,Male,"White, Non-Hispanic Only",No,5
+Faculty,Fulltime Faculty,Full-time,None,Ineligible,Male,Two or More Races,No,2
+Faculty,Fulltime Faculty,Full-time,None,None,Female,"Hispanic or Latino, regardless of race",No,3
+Faculty,Fulltime Faculty,Full-time,None,None,Female,"White, Non-Hispanic Only",No,20
+Faculty,Fulltime Faculty,Full-time,None,None,Female,Two or More Races,No,2
+Faculty,Fulltime Faculty,Full-time,None,None,Male,"Black, Non-Hispanic Only",No,1
+Faculty,Fulltime Faculty,Full-time,None,None,Male,"White, Non-Hispanic Only",No,4
+Faculty,Fulltime Faculty,Full-time,None,On Tenure Track,Female,"White, Non-Hispanic Only",No,2
+Faculty,Fulltime Faculty,Full-time,None,On Tenure Track,Male,"White, Non-Hispanic Only",No,2
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Female,Nonresident Alien,No,10
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Female,"Black, Non-Hispanic Only",No,1
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Female,"American Indian or Alaskan Native, Non-Hispanic Only",No,1
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Female,"Asian, Non-Hispanic Only",No,2
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Female,"White, Non-Hispanic Only",No,45
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Female,Race and Ethnicity Unknown,No,1
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Female,Two or More Races,No,6
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Male,Nonresident Alien,No,14
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Male,"Black, Non-Hispanic Only",No,4
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Male,"Hispanic or Latino, regardless of race",No,2
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Male,"White, Non-Hispanic Only",No,27
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,On Tenure Track,Male,Two or More Races,No,1
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,Tenured,Female,"Black, Non-Hispanic Only",No,1
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,Tenured,Female,"White, Non-Hispanic Only",No,10
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,Tenured,Male,"Hispanic or Latino, regardless of race",No,1
+Faculty,Fulltime Faculty,Full-time,Assistant Professor,Tenured,Male,"White, Non-Hispanic Only",No,3
+Faculty,Fulltime Faculty,Full-time,Associate Professor,On Tenure Track,Female,"Hispanic or Latino, regardless of race",No,1
+Faculty,Fulltime Faculty,Full-time,Associate Professor,On Tenure Track,Female,"White, Non-Hispanic Only",No,10
+Faculty,Fulltime Faculty,Full-time,Associate Professor,On Tenure Track,Male,"Black, Non-Hispanic Only",No,1
+Faculty,Fulltime Faculty,Full-time,Associate Professor,On Tenure Track,Male,"White, Non-Hispanic Only",No,7
+Faculty,Fulltime Faculty,Full-time,Associate Professor,Tenured,Female,Nonresident Alien,No,5
+Faculty,Fulltime Faculty,Full-time,Associate Professor,Tenured,Female,"Black, Non-Hispanic Only",No,3
+Faculty,Fulltime Faculty,Full-time,Associate Professor,Tenured,Female,"Asian, Non-Hispanic Only",No,3
+Faculty,Fulltime Faculty,Full-time,Associate Professor,Tenured,Female,"Hispanic or Latino, regardless of race",No,1
+Faculty,Fulltime Faculty,Full-time,Associate Professor,Tenured,Female,"White, Non-Hispanic Only",No,51
+Faculty,Fulltime Faculty,Full-time,Associate Professor,Tenured,Male,Nonresident Alien,No,4
+Faculty,Fulltime Faculty,Full-time,Associate Professor,Tenured,Male,"Black, Non-Hispanic Only",No,1
+Faculty,Fulltime Faculty,Full-time,Associate Professor,Tenured,Male,"Asian, Non-Hispanic Only",No,3
+Faculty,Fulltime Faculty,Full-time,Associate Professor,Tenured,Male,"White, Non-Hispanic Only",No,50
+Faculty,Fulltime Faculty,Full-time,Clinical Faculty,Ineligible,Female,Nonresident Alien,No,1
+Faculty,Fulltime Faculty,Full-time,Clinical Faculty,Ineligible,Female,"Black, Non-Hispanic Only",No,1
+Faculty,Fulltime Faculty,Full-time,Clinical Faculty,Ineligible,Female,"White, Non-Hispanic Only",No,12
+Faculty,Fulltime Faculty,Full-time,Clinical Faculty,Ineligible,Female,Race and Ethnicity Unknown,No,1
+Faculty,Fulltime Faculty,Full-time,Clinical Faculty,Ineligible,Male,"White, Non-Hispanic Only",No,3
+Faculty,Fulltime Faculty,Full-time,Instructor,Ineligible,Male,"White, Non-Hispanic Only",No,2
+Faculty,Fulltime Faculty,Full-time,Instructor,On Tenure Track,Female,"White, Non-Hispanic Only",No,6
+Faculty,Fulltime Faculty,Full-time,Instructor,On Tenure Track,Male,"White, Non-Hispanic Only",No,3
+Faculty,Fulltime Faculty,Full-time,Lecturer,Ineligible,Female,Nonresident Alien,No,1
+Faculty,Fulltime Faculty,Full-time,Lecturer,Ineligible,Female,"White, Non-Hispanic Only",No,7
+Faculty,Fulltime Faculty,Full-time,Lecturer,Ineligible,Male,Nonresident Alien,No,1
+Faculty,Fulltime Faculty,Full-time,Lecturer,Ineligible,Male,"White, Non-Hispanic Only",No,9
+Faculty,Fulltime Faculty,Full-time,Professor,On Tenure Track,Female,"White, Non-Hispanic Only",No,1
+Faculty,Fulltime Faculty,Full-time,Professor,Tenured,Female,Nonresident Alien,No,3
+Faculty,Fulltime Faculty,Full-time,Professor,Tenured,Female,"Asian, Non-Hispanic Only",No,4
+Faculty,Fulltime Faculty,Full-time,Professor,Tenured,Female,"Hispanic or Latino, regardless of race",No,3
+Faculty,Fulltime Faculty,Full-time,Professor,Tenured,Female,"White, Non-Hispanic Only",No,50
+Faculty,Fulltime Faculty,Full-time,Professor,Tenured,Male,Nonresident Alien,No,1
+Faculty,Fulltime Faculty,Full-time,Professor,Tenured,Male,"Black, Non-Hispanic Only",No,3
+Faculty,Fulltime Faculty,Full-time,Professor,Tenured,Male,"Asian, Non-Hispanic Only",No,7
+Faculty,Fulltime Faculty,Full-time,Professor,Tenured,Male,"Hispanic or Latino, regardless of race",No,3
+Faculty,Fulltime Faculty,Full-time,Professor,Tenured,Male,"White, Non-Hispanic Only",No,63
+Faculty,Fulltime Faculty,Full-time,Professor,Tenured,Male,Two or More Races,No,1
+Faculty,Fulltime Faculty,Full-time,Senior Clinical Faculty,Ineligible,Female,"White, Non-Hispanic Only",No,4
+Faculty,Fulltime Faculty,Full-time,Senior Lecturer,Ineligible,Female,"White, Non-Hispanic Only",No,11
+Faculty,Fulltime Faculty,Full-time,Senior Lecturer,Ineligible,Female,Two or More Races,No,2
+Faculty,Fulltime Faculty,Full-time,Senior Lecturer,Ineligible,Male,"Black, Non-Hispanic Only",No,1
+Faculty,Fulltime Faculty,Full-time,Senior Lecturer,Ineligible,Male,"White, Non-Hispanic Only",No,20
+Faculty,Fulltime Faculty,Full-time,Senior Lecturer,Ineligible,Male,Two or More Races,No,1
+Faculty,Fulltime Faculty,Full-time,Unreported,Ineligible,Female,"White, Non-Hispanic Only",No,2
+Faculty,Fulltime Faculty,Full-time,Visiting Assistant Professor,Ineligible,Female,Nonresident Alien,No,3
+Faculty,Fulltime Faculty,Full-time,Visiting Assistant Professor,Ineligible,Female,"White, Non-Hispanic Only",No,3
+Faculty,Fulltime Faculty,Full-time,Visiting Assistant Professor,Ineligible,Male,"White, Non-Hispanic Only",No,4
+Faculty,Fulltime Faculty,Full-time,Visiting Instructor,Ineligible,Female,"White, Non-Hispanic Only",No,1
+Faculty,Fulltime Faculty,Full-time,Visiting Lecturer,Ineligible,Female,"White, Non-Hispanic Only",No,1
+Faculty,PT Faculty,Part-time,None,Ineligible,Female,Nonresident Alien,No,3
+Faculty,PT Faculty,Part-time,None,Ineligible,Female,"Black, Non-Hispanic Only",No,8
+Faculty,PT Faculty,Part-time,None,Ineligible,Female,"Asian, Non-Hispanic Only",No,3
+Faculty,PT Faculty,Part-time,None,Ineligible,Female,"Hispanic or Latino, regardless of race",No,2
+Faculty,PT Faculty,Part-time,None,Ineligible,Female,"White, Non-Hispanic Only",No,199
+Faculty,PT Faculty,Part-time,None,Ineligible,Female,Race and Ethnicity Unknown,No,4
+Faculty,PT Faculty,Part-time,None,Ineligible,Female,Two or More Races,No,6
+Faculty,PT Faculty,Part-time,None,Ineligible,Male,Nonresident Alien,No,2
+Faculty,PT Faculty,Part-time,None,Ineligible,Male,"Black, Non-Hispanic Only",No,2
+Faculty,PT Faculty,Part-time,None,Ineligible,Male,"American Indian or Alaskan Native, Non-Hispanic Only",No,1
+Faculty,PT Faculty,Part-time,None,Ineligible,Male,"Hispanic or Latino, regardless of race",No,3
+Faculty,PT Faculty,Part-time,None,Ineligible,Male,"White, Non-Hispanic Only",No,98
+Faculty,PT Faculty,Part-time,None,Ineligible,Male,Race and Ethnicity Unknown,No,2
+Faculty,PT Faculty,Part-time,None,Ineligible,Male,Two or More Races,No,4
+Faculty,PT Faculty,Part-time,None,None,Female,"Black, Non-Hispanic Only",No,2
+Faculty,PT Faculty,Part-time,None,None,Female,"Hispanic or Latino, regardless of race",No,1
+Faculty,PT Faculty,Part-time,None,None,Female,"White, Non-Hispanic Only",No,15
+Faculty,PT Faculty,Part-time,None,None,Male,"Asian, Non-Hispanic Only",No,2
+Faculty,PT Faculty,Part-time,None,None,Male,"Hispanic or Latino, regardless of race",No,1
+Faculty,PT Faculty,Part-time,None,None,Male,"White, Non-Hispanic Only",No,8
+Faculty,PT Faculty,Part-time,None,None,Male,Two or More Races,No,1
+Faculty,PT Faculty,Part-time,Assistant Professor,On Tenure Track,Male,Nonresident Alien,No,1
+Faculty,PT Faculty,Part-time,Instructor,Ineligible,Female,"Black, Non-Hispanic Only",No,1
+Faculty,PT Faculty,Part-time,Instructor,Ineligible,Female,"White, Non-Hispanic Only",No,9
+Faculty,PT Faculty,Part-time,Instructor,Ineligible,Male,"White, Non-Hispanic Only",No,8
+Faculty,PT Faculty,Part-time,Instructor,On Tenure Track,Male,"Black, Non-Hispanic Only",No,1
+Faculty,PT Faculty,Part-time,Lecturer,Ineligible,Female,"White, Non-Hispanic Only",No,2
+Faculty,PT Faculty,Part-time,Lecturer,Ineligible,Male,"White, Non-Hispanic Only",No,3
+Faculty,PT Faculty,Part-time,Senior Clinical Faculty,Ineligible,Male,"White, Non-Hispanic Only",No,1
+Faculty,PT Faculty,Part-time,Unreported,Ineligible,Female,Nonresident Alien,No,1
+Faculty,PT Faculty,Part-time,Unreported,Ineligible,Female,"Asian, Non-Hispanic Only",No,1
+Faculty,PT Faculty,Part-time,Unreported,Ineligible,Female,"White, Non-Hispanic Only",No,9
+Faculty,PT Faculty,Part-time,Unreported,Ineligible,Female,Two or More Races,No,1
+Faculty,PT Faculty,Part-time,Unreported,Ineligible,Male,"White, Non-Hispanic Only",No,14
+Faculty,PT Faculty,Part-time,Unreported,Ineligible,Male,Race and Ethnicity Unknown,No,1
+Faculty,PT Faculty,Part-time,Visiting Assistant Professor,Ineligible,Female,"White, Non-Hispanic Only",No,3
+Faculty,PT Faculty,Part-time,Visiting Professor,Ineligible,Female,"White, Non-Hispanic Only",No,1
+Staff,Administrators/Deans,Full-time,None,Ineligible,Female,"White, Non-Hispanic Only",No,3
+Staff,Administrators/Deans,Full-time,None,None,Female,"White, Non-Hispanic Only",No,11
+Staff,Administrators/Deans,Full-time,None,None,Female,Race and Ethnicity Unknown,No,1
+Staff,Administrators/Deans,Full-time,None,None,Male,"Black, Non-Hispanic Only",No,1
+Staff,Administrators/Deans,Full-time,None,None,Male,"White, Non-Hispanic Only",No,12
+Staff,Administrators/Deans,Full-time,None,None,Male,Two or More Races,No,1
+Staff,Administrators/Deans,Full-time,Associate Librarian,Ineligible,Female,"White, Non-Hispanic Only",No,2
+Staff,Administrators/Deans,Full-time,Associate Professor,On Tenure Track,Female,"White, Non-Hispanic Only",No,1
+Staff,Administrators/Deans,Full-time,Associate Professor,Tenured,Male,"White, Non-Hispanic Only",No,1
+Staff,Administrators/Deans,Full-time,Professor,Tenured,Female,"White, Non-Hispanic Only",No,1
+Staff,Administrators/Deans,Full-time,Professor,Tenured,Male,"White, Non-Hispanic Only",No,2
+Staff,Administrators/Deans,Full-time,Unreported,Ineligible,Female,"White, Non-Hispanic Only",No,1
+Staff,Fulltime Hourly Staff,Full-time,None,Ineligible,Female,"Hispanic or Latino, regardless of race",No,1
+Staff,Fulltime Hourly Staff,Full-time,None,Ineligible,Female,"White, Non-Hispanic Only",No,3
+Staff,Fulltime Hourly Staff,Full-time,None,None,Female,Nonresident Alien,No,3
+Staff,Fulltime Hourly Staff,Full-time,None,None,Female,"Black, Non-Hispanic Only",No,5
+Staff,Fulltime Hourly Staff,Full-time,None,None,Female,"White, Non-Hispanic Only",No,155
+Staff,Fulltime Hourly Staff,Full-time,None,None,Female,"White, Non-Hispanic Only",Yes,4
+Staff,Fulltime Hourly Staff,Full-time,None,None,Female,Two or More Races,No,7
+Staff,Fulltime Hourly Staff,Full-time,None,None,Male,Nonresident Alien,No,2
+Staff,Fulltime Hourly Staff,Full-time,None,None,Male,"Black, Non-Hispanic Only",No,3
+Staff,Fulltime Hourly Staff,Full-time,None,None,Male,"White, Non-Hispanic Only",No,148
+Staff,Fulltime Hourly Staff,Full-time,None,None,Male,Race and Ethnicity Unknown,No,2
+Staff,Fulltime Hourly Staff,Full-time,None,None,Male,Two or More Races,No,6
+Staff,Fulltime Hourly Staff,Full-time,Instructor,Ineligible,Female,"White, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,None,Ineligible,Female,Nonresident Alien,No,2
+Staff,Fulltime Professionals,Full-time,None,Ineligible,Female,"Black, Non-Hispanic Only",No,2
+Staff,Fulltime Professionals,Full-time,None,Ineligible,Female,"White, Non-Hispanic Only",No,48
+Staff,Fulltime Professionals,Full-time,None,Ineligible,Female,Two or More Races,No,1
+Staff,Fulltime Professionals,Full-time,None,Ineligible,Male,Nonresident Alien,No,1
+Staff,Fulltime Professionals,Full-time,None,Ineligible,Male,"White, Non-Hispanic Only",No,32
+Staff,Fulltime Professionals,Full-time,None,Ineligible,Male,Two or More Races,No,1
+Staff,Fulltime Professionals,Full-time,None,None,Female,Nonresident Alien,No,9
+Staff,Fulltime Professionals,Full-time,None,None,Female,"Black, Non-Hispanic Only",No,15
+Staff,Fulltime Professionals,Full-time,None,None,Female,"Black, Non-Hispanic Only",Yes,1
+Staff,Fulltime Professionals,Full-time,None,None,Female,"Asian, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,None,None,Female,"Hispanic or Latino, regardless of race",No,12
+Staff,Fulltime Professionals,Full-time,None,None,Female,"White, Non-Hispanic Only",No,277
+Staff,Fulltime Professionals,Full-time,None,None,Female,"White, Non-Hispanic Only",Yes,11
+Staff,Fulltime Professionals,Full-time,None,None,Female,Race and Ethnicity Unknown,No,1
+Staff,Fulltime Professionals,Full-time,None,None,Female,Two or More Races,No,13
+Staff,Fulltime Professionals,Full-time,None,None,Female,Two or More Races,Yes,1
+Staff,Fulltime Professionals,Full-time,None,None,Female,"Native Hawaiian or Other Pacific Islander, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,None,None,Male,Nonresident Alien,No,2
+Staff,Fulltime Professionals,Full-time,None,None,Male,"Black, Non-Hispanic Only",No,14
+Staff,Fulltime Professionals,Full-time,None,None,Male,"Asian, Non-Hispanic Only",No,2
+Staff,Fulltime Professionals,Full-time,None,None,Male,"Hispanic or Latino, regardless of race",No,3
+Staff,Fulltime Professionals,Full-time,None,None,Male,"White, Non-Hispanic Only",No,196
+Staff,Fulltime Professionals,Full-time,None,None,Male,"White, Non-Hispanic Only",Yes,6
+Staff,Fulltime Professionals,Full-time,None,None,Male,Race and Ethnicity Unknown,No,3
+Staff,Fulltime Professionals,Full-time,None,None,Male,Two or More Races,No,12
+Staff,Fulltime Professionals,Full-time,Assistant Librarian,Ineligible,Female,"White, Non-Hispanic Only",No,2
+Staff,Fulltime Professionals,Full-time,Assistant Librarian,Ineligible,Male,"White, Non-Hispanic Only",No,2
+Staff,Fulltime Professionals,Full-time,Assistant Professor,On Tenure Track,Male,Two or More Races,No,1
+Staff,Fulltime Professionals,Full-time,Associate Librarian,Ineligible,Female,"White, Non-Hispanic Only",No,4
+Staff,Fulltime Professionals,Full-time,Associate Librarian,Ineligible,Female,"White, Non-Hispanic Only",Yes,2
+Staff,Fulltime Professionals,Full-time,Associate Librarian,Ineligible,Male,Two or More Races,No,1
+Staff,Fulltime Professionals,Full-time,Associate Librarian,None,Female,"White, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,Associate Professor,Tenured,Female,"White, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,Clinical Faculty,Ineligible,Female,"White, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,Instructor,Ineligible,Female,"Black, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,Instructor,Ineligible,Female,"White, Non-Hispanic Only",No,3
+Staff,Fulltime Professionals,Full-time,Instructor,Ineligible,Female,"White, Non-Hispanic Only",Yes,1
+Staff,Fulltime Professionals,Full-time,Instructor,Ineligible,Female,Two or More Races,No,1
+Staff,Fulltime Professionals,Full-time,Instructor,Ineligible,Male,"White, Non-Hispanic Only",No,3
+Staff,Fulltime Professionals,Full-time,Instructor,On Tenure Track,Female,"White, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,Lecturer,Ineligible,Female,"White, Non-Hispanic Only",No,2
+Staff,Fulltime Professionals,Full-time,Lecturer,Ineligible,Male,"White, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,Professor,Tenured,Male,"White, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,Unreported,Ineligible,Female,"White, Non-Hispanic Only",No,2
+Staff,Fulltime Professionals,Full-time,Unreported,None,Male,"White, Non-Hispanic Only",No,1
+Staff,Fulltime Professionals,Full-time,Visiting Assistant Professor,Ineligible,Female,"White, Non-Hispanic Only",Yes,1
+Staff,PT Hourly Staff,Full-time,None,None,Male,"White, Non-Hispanic Only",No,1
+Staff,PT Hourly Staff,Part-time,None,Ineligible,Female,"Black, Non-Hispanic Only",No,1
+Staff,PT Hourly Staff,Part-time,None,None,Female,Nonresident Alien,No,4
+Staff,PT Hourly Staff,Part-time,None,None,Female,"Black, Non-Hispanic Only",No,3
+Staff,PT Hourly Staff,Part-time,None,None,Female,"Hispanic or Latino, regardless of race",No,1
+Staff,PT Hourly Staff,Part-time,None,None,Female,"White, Non-Hispanic Only",No,72
+Staff,PT Hourly Staff,Part-time,None,None,Female,Race and Ethnicity Unknown,No,2
+Staff,PT Hourly Staff,Part-time,None,None,Female,Two or More Races,No,1
+Staff,PT Hourly Staff,Part-time,None,None,Female,Two or More Races,Yes,1
+Staff,PT Hourly Staff,Part-time,None,None,Male,"Black, Non-Hispanic Only",No,5
+Staff,PT Hourly Staff,Part-time,None,None,Male,"Hispanic or Latino, regardless of race",No,2
+Staff,PT Hourly Staff,Part-time,None,None,Male,"White, Non-Hispanic Only",No,77
+Staff,PT Hourly Staff,Part-time,None,None,Male,Two or More Races,No,2
+Staff,PT Hourly Staff,Part-time,Assistant Professor,On Tenure Track,Male,"White, Non-Hispanic Only",No,1
+Staff,PT Hourly Staff,Part-time,Assistant Professor,Tenured,Male,"White, Non-Hispanic Only",No,1
+Staff,PT Hourly Staff,Part-time,Unreported,Ineligible,Female,"Hispanic or Latino, regardless of race",No,1
+Staff,PT Hourly Staff,Part-time,Unreported,Ineligible,Female,"White, Non-Hispanic Only",No,1
+Staff,PT Professionals,Part-time,None,Ineligible,Female,"White, Non-Hispanic Only",No,4
+Staff,PT Professionals,Part-time,None,Ineligible,Male,"White, Non-Hispanic Only",No,5
+Staff,PT Professionals,Part-time,None,None,Female,"Black, Non-Hispanic Only",No,5
+Staff,PT Professionals,Part-time,None,None,Female,"Asian, Non-Hispanic Only",No,1
+Staff,PT Professionals,Part-time,None,None,Female,"White, Non-Hispanic Only",No,52
+Staff,PT Professionals,Part-time,None,None,Female,Race and Ethnicity Unknown,No,1
+Staff,PT Professionals,Part-time,None,None,Female,Two or More Races,No,3
+Staff,PT Professionals,Part-time,None,None,Male,"Black, Non-Hispanic Only",No,1
+Staff,PT Professionals,Part-time,None,None,Male,"White, Non-Hispanic Only",No,26
+Staff,PT Professionals,Part-time,Assistant Professor,Tenured,Female,"White, Non-Hispanic Only",No,3
+Staff,PT Professionals,Part-time,Assistant Professor,Tenured,Male,"White, Non-Hispanic Only",No,1
+Staff,PT Professionals,Part-time,Associate Professor,Tenured,Male,"White, Non-Hispanic Only",No,1
+Staff,PT Professionals,Part-time,Instructor,Ineligible,Male,"White, Non-Hispanic Only",No,1
+Student,GA,Part-time,None,Ineligible,Female,"White, Non-Hispanic Only",No,8
+Student,GA,Part-time,None,Ineligible,Male,"Hispanic or Latino, regardless of race",No,1
+Student,GA,Part-time,None,Ineligible,Male,"White, Non-Hispanic Only",No,7
+Student,GA,Part-time,None,None,Female,Nonresident Alien,No,11
+Student,GA,Part-time,None,None,Female,"Black, Non-Hispanic Only",No,7
+Student,GA,Part-time,None,None,Female,"Asian, Non-Hispanic Only",No,1
+Student,GA,Part-time,None,None,Female,"Hispanic or Latino, regardless of race",No,5
+Student,GA,Part-time,None,None,Female,"White, Non-Hispanic Only",No,82
+Student,GA,Part-time,None,None,Female,Race and Ethnicity Unknown,No,1
+Student,GA,Part-time,None,None,Female,Two or More Races,No,6
+Student,GA,Part-time,None,None,Male,Nonresident Alien,No,13
+Student,GA,Part-time,None,None,Male,"Black, Non-Hispanic Only",No,4
+Student,GA,Part-time,None,None,Male,"Hispanic or Latino, regardless of race",No,2
+Student,GA,Part-time,None,None,Male,"White, Non-Hispanic Only",No,35
+Student,GA,Part-time,None,None,Male,Two or More Races,No,5
+Student,Student,Part-time,None,Ineligible,Male,"White, Non-Hispanic Only",No,1
+Student,Student,Part-time,None,None,Female,Nonresident Alien,No,14
+Student,Student,Part-time,None,None,Female,"Black, Non-Hispanic Only",No,26
+Student,Student,Part-time,None,None,Female,"American Indian or Alaskan Native, Non-Hispanic Only",No,1
+Student,Student,Part-time,None,None,Female,"Asian, Non-Hispanic Only",No,15
+Student,Student,Part-time,None,None,Female,"Hispanic or Latino, regardless of race",No,43
+Student,Student,Part-time,None,None,Female,"White, Non-Hispanic Only",No,507
+Student,Student,Part-time,None,None,Female,Race and Ethnicity Unknown,No,1
+Student,Student,Part-time,None,None,Female,Two or More Races,No,30
+Student,Student,Part-time,None,None,Male,Nonresident Alien,No,4
+Student,Student,Part-time,None,None,Male,"Black, Non-Hispanic Only",No,16
+Student,Student,Part-time,None,None,Male,"Asian, Non-Hispanic Only",No,5
+Student,Student,Part-time,None,None,Male,"Hispanic or Latino, regardless of race",No,22
+Student,Student,Part-time,None,None,Male,"White, Non-Hispanic Only",No,282
+Student,Student,Part-time,None,None,Male,Race and Ethnicity Unknown,No,1
+Student,Student,Part-time,None,None,Male,Two or More Races,No,18

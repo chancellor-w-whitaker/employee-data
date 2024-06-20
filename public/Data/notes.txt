@@ -1,0 +1,61 @@
+
+
+Data for this report was taken from the Banner jobs function created by Michael Wooten (IT).
+
+The jobs function was ran for the same start and end date. This was to get a static single 
+day picture of what the university looked like on that particular day.
+
+This is each distinct employee where a single job was selected in the following rank (primary, secondary, overload, etc).
+
+
+
+** 	It's important to note that this data will not match IPEDS data. IPEDS HR is created using 
+	a built in Banner process whereas this uses an in house function from IT.
+
+*****************************************************************************************
+----- Columns in the Dashboard -----
+
+	Job Type -- A calculated value based primarily on JOB_ECLS_GROUP. Should only have 4 
+		potential values (Faculty, Staff, Student, Unknown).
+		- Administrators/Deans were delt with	in a slightly different way. 
+			* Dean of Students & Dean of Libraries were moved to Staff.
+			* Other Deans were moved to Faculty.
+			* All others left in Administrators/Deans were moved to Staff.
+
+	Job Group -- JOB_ECLS_GROUP from the Banner jobs function.
+
+	Full/Part-time -- JOB_ECLS_FT_PT from the Banner jobs function.
+	
+	Faculty Rank -- PEAFACT_RANK_DESC from the Banner jobs function.
+	
+	Tenure -- TENURE_DESC from the Banner jobs function.
+		This will have a flaw for prior years.
+		
+	Gender -- 
+	
+	Race -- computed_race, this is taken from a built in Banner function that I found.
+		This function is used with PERIPDS process for IPEDS HR.
+		It will have a flaw for prior years.
+
+*****************************************************************************************
+----- Jobs Function -----
+
+This SAS Macro will call the Banner Jobs Function.
+
+%getJobs(captureDate=&inDate, distinctEmployees='Y', pict_Codes='SM,BW,FA,ST,SS');
+
+Banner Jobs function call.
+jobs(
+	P_START_DATE=>&captureDate, 
+	P_END_DATE=>&endDate, 
+	P_DISTINCT_EMPLOYEES=>&distinctEmployees, 
+	P_PICT_CODES=>&pict_Codes, 
+	P_HIGHEST_DEGREE=>'Y', 
+	P_TENURE=>'Y', 
+	P_RANK=>'Y', 
+	P_RACE=>'Y', 
+	P_APPROVER=>'Y', 
+	P_ORGN_DESC=>'Y'
+)
+
+In this call endDate = captureDate.
