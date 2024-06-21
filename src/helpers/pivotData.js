@@ -1,13 +1,13 @@
-export const pivotRows = ({
+export const pivotData = ({
   pivotOn = "",
   groupBy = [],
   sumUp = [],
-  rows = [],
+  data = [],
 }) => {
   if (groupBy.length === 0) {
     const summaryRow = {};
 
-    rows?.forEach((row) => {
+    data?.forEach((row) => {
       const pivotValue = row[pivotOn];
 
       if (!(pivotValue in summaryRow)) {
@@ -35,7 +35,7 @@ export const pivotRows = ({
   const tree = {};
 
   // ! only need to iterate data once
-  rows?.forEach((row) => {
+  data?.forEach((row) => {
     // ! make root mutable like an iterable in a for loop
     let currentRoot = tree;
 

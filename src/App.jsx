@@ -1,16 +1,13 @@
-import { useState, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import Calendar from "react-calendar";
+import { csv } from "d3-fetch";
 
-import { getAllDataPromised } from "./helpers/getAllDataPromised";
-import { fileToDateObject } from "./helpers/fileToDateObject";
+import { useResettableState } from "./hooks/useResettableState";
 import { fileListPromise } from "./constants/fileListPromise";
-import { usePreviousState } from "./hooks/usePreviousState";
-import { findDefaultFile } from "./helpers/findDefaultFile";
 import { MainContainer } from "./components/MainContainer";
-import { findDataFiles } from "./helpers/findDataFiles";
 import { usePromise } from "./hooks/usePromise";
 import { usePopover } from "./hooks/usePopover";
-import { pivotRows } from "./helpers/pivotRows";
+import { pivotData } from "./helpers/pivotData";
 import { isNumeric } from "./helpers/isNumeric";
 import { Content } from "./components/Content";
 import { Button } from "./components/Button";
@@ -23,60 +20,43 @@ const pivotDefs = {
 
 const { groupBy, sumUp } = pivotDefs;
 
-const selectedSumUp = sumUp[0];
+const measure = sumUp[0];
 
-export default function App() {
-  const fileList = usePromise(fileListPromise);
+const fileToDateObject = (file) => {
+  if (file) {
+    const { month, year, day } = file;
 
-  const defaultFile = findDefaultFile(fileList);
+    const monthIndex = month - 1;
 
-  const defaultDate = fileToDateObject(defaultFile);
+    return new Date(year, monthIndex, day);
+  }
+  return new Date();
+};
 
-  const defaultDateAsString = defaultDate.toLocaleDateString();
-
-  const initialDate = new Date(defaultDateAsString);
-
-  const [date, setDate] = useState(initialDate);
-
-  usePreviousState(defaultDateAsString, () => setDate(initialDate));
-
-  const [month, day] = date.toLocaleDateString().split("/");
-
-  const dataFiles = useMemo(
-    () => findDataFiles({ fileList, month, day }),
-    [fileList, day, month]
-  );
-
-  const allDataPromised = useMemo(
-    () => getAllDataPromised(dataFiles),
-    [dataFiles]
-  );
-
-  const dataArrays = usePromise(allDataPromised);
-
-  const processedData = dataArrays
+const makeDataAggregable = ({ dataArrays, dataFiles }) =>
+  dataArrays
     .map((rows, index) =>
       rows.map((row) => {
-        const dataFile = dataFiles[index];
+        const file = dataFiles[index];
 
-        const localeDateString =
-          fileToDateObject(dataFile).toLocaleDateString();
+        const dateString = fileToDateObject(file).toLocaleDateString();
 
-        const sumUpDefs = Object.fromEntries(
-          sumUp.map((key) => [
+        const rowWithNumericValues = Object.fromEntries(
+          Object.entries(row).map(([key, value]) => [
             key,
-            isNumeric(row[key]) ? Number(row[key]) : row[key],
+            sumUp.includes(key) && isNumeric(value) ? Number(value) : value,
           ])
         );
 
-        return { ...row, ...sumUpDefs, date: localeDateString };
+        return { ...rowWithNumericValues, date: dateString };
       })
     )
     .flat();
 
-  const pivotedData = pivotRows({ ...pivotDefs, rows: processedData });
+const getChartData = (data) => {
+  const pivotedData = pivotData({ ...pivotDefs, data });
 
-  const chartData = pivotedData.rowData.map((element) => {
+  return pivotedData.rowData.map((element) => {
     const entries = Object.entries(element);
 
     const group = entries
@@ -87,19 +67,85 @@ export default function App() {
 
     const valueEntries = entries
       .filter(([key, value]) => typeof value === "object")
-      .map(([key, value]) => [key, value[selectedSumUp]]);
+      .map(([key, value]) => [key, value[measure]]);
 
     const object = { group, ...Object.fromEntries(valueEntries) };
 
     return object;
   });
+};
+
+const getInitialCalendarDate = (fileList) => {
+  const defaultFile = fileList.find(
+    ({ default: isDefault }) => isDefault === "Y"
+  );
+
+  if (defaultFile) {
+    const { month, year, day } = defaultFile;
+
+    const monthIndex = month - 1;
+
+    return new Date(year, monthIndex, day);
+  }
+
+  return new Date();
+};
+
+const findFilesOfDate = ({ fileList, date }) => {
+  const [month, day] = date.toLocaleDateString().split("/");
+
+  return fileList.filter(
+    ({ month: fileMonth, day: fileDay }) =>
+      `${fileMonth}` === month && `${fileDay}` === day
+  );
+};
+
+const getDataArraysPromise = (dataFiles) => {
+  return Promise.all(dataFiles.map(({ web_path }) => csv(web_path)));
+};
+
+export default function App() {
+  const fileList = usePromise(fileListPromise);
+
+  const initialDate = useMemo(
+    () => getInitialCalendarDate(fileList),
+    [fileList]
+  );
+
+  const [date, setDate] = useResettableState(initialDate);
+
+  const filesMatchingDate = useMemo(
+    () => findFilesOfDate({ fileList, date }),
+    [date, fileList]
+  );
+
+  const dataArraysPromise = useMemo(
+    () => getDataArraysPromise(filesMatchingDate),
+    [filesMatchingDate]
+  );
+
+  const dataArrays = usePromise(dataArraysPromise);
+
+  const aggregableData = useMemo(
+    () =>
+      makeDataAggregable({
+        dataFiles: filesMatchingDate,
+        dataArrays,
+      }),
+    [dataArrays, filesMatchingDate]
+  );
+
+  const chartData = useMemo(
+    () => getChartData(aggregableData),
+    [aggregableData]
+  );
 
   console.log(chartData);
 
   // const uniqueValues = useMemo(() => {
   //   const savedValues = {};
 
-  //   processedData.forEach((row) =>
+  //   rowData.forEach((row) =>
   //     Object.keys(row).forEach((key) => {
   //       if (!(key in savedValues)) savedValues[key] = new Set();
 
@@ -116,16 +162,22 @@ export default function App() {
   //   );
 
   //   return savedValuesSorted;
-  // }, [processedData]);
+  // }, [rowData]);
 
   const { popover, isOpen, open } = usePopover();
 
-  const localeDateStringsSet = new Set(
-    fileList.map((file) => fileToDateObject(file).toLocaleDateString())
+  const setOfDatesWithData = useMemo(
+    () =>
+      new Set(
+        fileList.map((file) => fileToDateObject(file).toLocaleDateString())
+      ),
+    [fileList]
   );
 
-  const tileDisabled = ({ date }) =>
-    !localeDateStringsSet.has(date.toLocaleDateString());
+  const tileDisabled = useCallback(
+    ({ date }) => !setOfDatesWithData.has(date.toLocaleDateString()),
+    [setOfDatesWithData]
+  );
 
   return (
     <MainContainer>
