@@ -7,7 +7,7 @@ import {
   YAxis,
   Line,
 } from "recharts";
-import { useCallback, useMemo } from "react";
+import { useCallback, useState, useMemo } from "react";
 import Calendar from "react-calendar";
 import { csv } from "d3-fetch";
 
@@ -105,10 +105,8 @@ export default function MyApp() {
     );
 
     const lines = groupData.map(({ group: dataKey }) => ({
+      ...lineConstants,
       stroke: strokeColors[dataKey],
-      type: "monotone",
-      strokeWidth: 2,
-      dot: false,
       dataKey,
     }));
 
@@ -126,11 +124,25 @@ export default function MyApp() {
     [validDatesSet]
   );
 
-  // ! legend hover event
-  // ! dot hover event
+  const [strokeOpacity, setStrokeOpacity] = useState({});
+
+  const handleMouseEnter = useCallback((object) => {
+    const { dataKey } = object;
+
+    setStrokeOpacity((previousState) => ({ ...previousState, [dataKey]: 0.5 }));
+  }, []);
+
+  const handleMouseLeave = useCallback((object) => {
+    const { dataKey } = object;
+
+    setStrokeOpacity((previousState) => ({ ...previousState, [dataKey]: 1 }));
+  }, []);
+
+  // * legend hover event
   // ! dot style
-  // ! tooltip only on dot hover
   // ! legend shapes match lines with filled dots style
+  // ! tooltip only on dot hover
+  // ! dot hover event
   // ! filters
   // ? anything used as a prop or dependency should have optimal referential equality across renders
   // ? (won't cause unnecessary rerenders if you choose to memoize components)
@@ -167,9 +179,18 @@ export default function MyApp() {
               tickLine={false}
             />
             <Tooltip formatter={valueFormatter} />
-            <Legend />
-            {lines.map((line) => (
-              <Line {...line} key={line.dataKey}></Line>
+            <Legend
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              verticalAlign="top"
+            />
+            {lines.map(({ dataKey, ...line }) => (
+              <Line
+                {...line}
+                strokeOpacity={strokeOpacity[dataKey]}
+                dataKey={dataKey}
+                key={dataKey}
+              ></Line>
             ))}
           </LineChart>
         </ResponsiveContainer>
@@ -177,6 +198,8 @@ export default function MyApp() {
     </MainContainer>
   );
 }
+
+const lineConstants = { type: "monotone", strokeWidth: 2, dot: false };
 
 const xAxisPadding = { right: 30, left: 30 };
 
@@ -214,6 +237,4 @@ const strokeColors = {
   "Full-time Staff": "red",
 };
 
-const fileListUrl = "Data/_fileList.csv";
-
-const fileListPromise = csv(fileListUrl);
+const fileListPromise = csv("Data/_fileList.csv");
