@@ -1,6 +1,5 @@
 import {
   ResponsiveContainer,
-  CartesianGrid,
   LineChart,
   Tooltip,
   Legend,
@@ -8,13 +7,15 @@ import {
   YAxis,
   Line,
 } from "recharts";
+import { useCallback, useMemo } from "react";
 import Calendar from "react-calendar";
-import { useMemo } from "react";
 import { csv } from "d3-fetch";
 
 import { useResettableState } from "./hooks/useResettableState";
+import { MainContainer } from "./components/MainContainer";
 import { usePromise } from "./hooks/usePromise";
 import { pivotData } from "./helpers/pivotData";
+import { Content } from "./components/Content";
 
 export default function MyApp() {
   const fileList = usePromise(fileListPromise);
@@ -66,17 +67,6 @@ export default function MyApp() {
       .flat();
   }, [dataArrays, dataFiles]);
 
-  /*
-    [
-	    { date: dateStringA, groupA: number, groupB: number, ..., groupZ: number },
-	    { date: dateStringB, groupA: number, groupB: number, ..., groupZ: number },
-	    ...,
-	    { date: dateStringZ, groupA: number, groupB: number, ..., groupZ: number }
-    ]
-
-    meaning, date is xAxisDataKey, groups are lineDataKeys
-  */
-
   const { lines, data } = useMemo(() => {
     const pivotedData = pivotData({ ...pivotDefs, data: aggregableData });
 
@@ -110,41 +100,89 @@ export default function MyApp() {
         });
     });
 
-    const data = Object.values(dates);
+    const data = Object.values(dates).sort(
+      ({ date: dateA }, { date: dateB }) => new Date(dateA) - new Date(dateB)
+    );
 
-    const lines = groupData.map(({ group }) => ({
+    const lines = groupData.map(({ group: dataKey }) => ({
+      stroke: strokeColors[dataKey],
       type: "monotone",
-      dataKey: group,
+      strokeWidth: 2,
+      dot: false,
+      dataKey,
     }));
 
     return { lines, data };
   }, [aggregableData]);
 
+  const validDatesSet = useMemo(
+    () =>
+      new Set(fileList.map((file) => fileToDate(file).toLocaleDateString())),
+    [fileList]
+  );
+
+  const tileDisabled = useCallback(
+    ({ date }) => !validDatesSet.has(date.toLocaleDateString()),
+    [validDatesSet]
+  );
+
+  // ! legend hover event
+  // ! dot hover event
+  // ! dot style
+  // ! tooltip only on dot hover
+  // ! legend shapes match lines with filled dots style
+  // ! filters
+  // ? anything used as a prop or dependency should have optimal referential equality across renders
+  // ? (won't cause unnecessary rerenders if you choose to memoize components)
+  // ? and prefer using the least number of hooks required for each job, unless it is obviously inconvenient to do so
+
   return (
-    <div>
-      <Calendar onChange={setDate} value={date} />
-      <ResponsiveContainer height={300}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey={xAxisDataKey} />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          {lines.map((line) => (
-            <Line {...line} key={line.dataKey}></Line>
-          ))}
-          {/* <Line
-            activeDot={{ r: 8 }}
-            stroke="#8884d8"
-            type="monotone"
-            dataKey="pv"
-          /> */}
-          {/* <Line stroke="#82ca9d" type="monotone" dataKey="uv" /> */}
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
+    <MainContainer>
+      <Content>
+        <h1 className="display-6 mb-0">Faculty/Staff Employee Data</h1>
+      </Content>
+      <Content>
+        <Calendar
+          tileDisabled={tileDisabled}
+          className="shadow-sm"
+          onChange={setDate}
+          value={date}
+        />
+      </Content>
+      <Content>
+        <div className="fs-4">{date.toLocaleDateString()}</div>
+      </Content>
+      <Content>
+        <ResponsiveContainer height={300}>
+          <LineChart data={data}>
+            <XAxis
+              tickFormatter={xAxisTickFormatter}
+              padding={xAxisPadding}
+              dataKey={xAxisDataKey}
+              tickLine={false}
+            />
+            <YAxis
+              tickFormatter={valueFormatter}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip formatter={valueFormatter} />
+            <Legend />
+            {lines.map((line) => (
+              <Line {...line} key={line.dataKey}></Line>
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </Content>
+    </MainContainer>
   );
 }
+
+const xAxisPadding = { right: 30, left: 30 };
+
+const xAxisTickFormatter = (dateString) => new Date(dateString).getFullYear();
+
+const valueFormatter = (value) => value.toLocaleString();
 
 const fileToDate = (file) => {
   if (file) {
@@ -167,6 +205,14 @@ const pivotDefs = {
 const { sumUp: numericColumns, pivotOn: xAxisDataKey, groupBy } = pivotDefs;
 
 const activeNumericColumn = numericColumns[0];
+
+const strokeColors = {
+  "Part-time Faculty": "orange",
+  "Part-time Student": "purple",
+  "Full-time Faculty": "blue",
+  "Part-time Staff": "green",
+  "Full-time Staff": "red",
+};
 
 const fileListUrl = "Data/_fileList.csv";
 
