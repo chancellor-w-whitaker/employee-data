@@ -11,11 +11,15 @@ import { useCallback, useState, useMemo } from "react";
 import Calendar from "react-calendar";
 import { csv } from "d3-fetch";
 
+import { specificLineProps } from "./constants/specificLineProps";
 import { useResettableState } from "./hooks/useResettableState";
 import { MainContainer } from "./components/MainContainer";
+import { renderLegend } from "./helpers/renderLegend";
+import { fileToDate } from "./helpers/fileToDate";
 import { usePromise } from "./hooks/usePromise";
 import { pivotData } from "./helpers/pivotData";
 import { Content } from "./components/Content";
+import { constants } from "./constants";
 
 export default function MyApp() {
   const fileList = usePromise(fileListPromise);
@@ -105,9 +109,8 @@ export default function MyApp() {
     );
 
     const lines = groupData.map(({ group: dataKey }) => ({
-      ...lineConstants,
-      stroke: strokeColors[dataKey],
-      dataKey,
+      ...genericLineProps,
+      ...specificLineProps[dataKey],
     }));
 
     return { lines, data };
@@ -124,23 +127,26 @@ export default function MyApp() {
     [validDatesSet]
   );
 
-  const [strokeOpacity, setStrokeOpacity] = useState({});
+  const [hoveredLegendItem, setHoveredLegendItem] = useState();
 
-  const handleMouseEnter = useCallback((object) => {
-    const { dataKey } = object;
+  const handleMouseEnter = useCallback(
+    ({ dataKey }) => setHoveredLegendItem(dataKey),
+    []
+  );
 
-    setStrokeOpacity((previousState) => ({ ...previousState, [dataKey]: 0.5 }));
-  }, []);
+  const handleMouseLeave = useCallback(() => setHoveredLegendItem(null), []);
 
-  const handleMouseLeave = useCallback((object) => {
-    const { dataKey } = object;
-
-    setStrokeOpacity((previousState) => ({ ...previousState, [dataKey]: 1 }));
-  }, []);
+  const getLineStyle = useCallback(
+    (dataKey) =>
+      dataKey === hoveredLegendItem
+        ? { filter: "drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5))" }
+        : null,
+    [hoveredLegendItem]
+  );
 
   // * legend hover event
-  // ! dot style
-  // ! legend shapes match lines with filled dots style
+  // * dot style
+  // * legend shapes match lines with filled dots style
   // ! tooltip only on dot hover
   // ! dot hover event
   // ! filters
@@ -165,7 +171,7 @@ export default function MyApp() {
         <div className="fs-4">{date.toLocaleDateString()}</div>
       </Content>
       <Content>
-        <ResponsiveContainer height={300}>
+        <ResponsiveContainer height={400}>
           <LineChart data={data}>
             <XAxis
               tickFormatter={xAxisTickFormatter}
@@ -182,12 +188,13 @@ export default function MyApp() {
             <Legend
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
+              content={renderLegend}
               verticalAlign="top"
             />
             {lines.map(({ dataKey, ...line }) => (
               <Line
                 {...line}
-                strokeOpacity={strokeOpacity[dataKey]}
+                style={getLineStyle(dataKey)}
                 dataKey={dataKey}
                 key={dataKey}
               ></Line>
@@ -199,42 +206,15 @@ export default function MyApp() {
   );
 }
 
-const lineConstants = { type: "monotone", strokeWidth: 2, dot: false };
-
-const xAxisPadding = { right: 30, left: 30 };
-
-const xAxisTickFormatter = (dateString) => new Date(dateString).getFullYear();
-
-const valueFormatter = (value) => value.toLocaleString();
-
-const fileToDate = (file) => {
-  if (file) {
-    const { month, year, day } = file;
-
-    const monthIndex = month - 1;
-
-    return new Date(year, monthIndex, day);
-  }
-
-  return new Date();
-};
-
-const pivotDefs = {
-  groupBy: ["JOB_ECLS_FT_PT", "JOB_TYPE"],
-  sumUp: ["total"],
-  pivotOn: "date",
-};
+const {
+  xAxisTickFormatter,
+  genericLineProps,
+  fileListPromise,
+  valueFormatter,
+  xAxisPadding,
+  pivotDefs,
+} = constants;
 
 const { sumUp: numericColumns, pivotOn: xAxisDataKey, groupBy } = pivotDefs;
 
 const activeNumericColumn = numericColumns[0];
-
-const strokeColors = {
-  "Part-time Faculty": "orange",
-  "Part-time Student": "purple",
-  "Full-time Faculty": "blue",
-  "Part-time Staff": "green",
-  "Full-time Staff": "red",
-};
-
-const fileListPromise = csv("Data/_fileList.csv");
