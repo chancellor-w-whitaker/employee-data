@@ -150,7 +150,11 @@ export default function App() {
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip formatter={valueFormatter} active={isTooltipActive} />
+            <Tooltip
+              formatter={valueFormatter}
+              wrapperClassName="shadow"
+              active={isTooltipActive}
+            />
             <Legend
               content={<CustomizedLegend></CustomizedLegend>}
               onMouseEnter={onMouseEnterLegend}
