@@ -1,19 +1,19 @@
 import { constants } from "../constants";
 
-export const getReferenceDots = ({ chartData, lines }) => {
+export const getLineReferenceDots = ({ chartData, lines }) => {
   const dataKeyColors = Object.fromEntries(
     lines.map(({ dataKey, stroke }) => [dataKey, stroke])
   );
 
   const dots = chartData
     .map((element) =>
-      Object.entries(dataKeyColors).map(([lineDataKey, stroke]) => ({
-        onMouseEnter: (e) => console.log(e),
-        onMouseLeave: (e) => console.log(e),
+      Object.entries(dataKeyColors).map(([dataKey, stroke]) => ({
+        className: "recharts-dot recharts-line-dot",
         x: element[xAxisDataKey],
-        y: element[lineDataKey],
-        strokeWidth: "none",
+        y: element[dataKey],
+        strokeWidth: 2,
         fill: stroke,
+        dataKey,
         stroke,
         r: 5,
       }))

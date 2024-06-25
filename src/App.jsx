@@ -12,16 +12,18 @@ import { useCallback, useState, useMemo } from "react";
 import Calendar from "react-calendar";
 
 import { getDataArraysPromise } from "./helpers/getDataArraysPromise";
+import { getLineReferenceDots } from "./helpers/getLineReferenceDots";
 import { makeDataAggregable } from "./helpers/makeDataAggregable";
 import { getChartProperties } from "./helpers/getChartProperties";
 import { getSetOfValidDates } from "./helpers/getSetOfValidDates";
 import { CustomizedLegend } from "./components/CustomizedLegend";
 import { useResettableState } from "./hooks/useResettableState";
-import { getReferenceDots } from "./helpers/getReferenceDots";
 import { getDefaultDate } from "./helpers/getDefaultDate";
 import { getDataFiles } from "./helpers/getDataFiles";
 import { usePromise } from "./hooks/usePromise";
+import { styleLine } from "./helpers/styleLine";
 import { Content } from "./components/Content";
+import { styleDot } from "./helpers/styleDot";
 import { Main } from "./components/Main";
 import { constants } from "./constants";
 
@@ -63,37 +65,56 @@ export default function App() {
 
   const [activeLegendItem, setActiveLegendItem] = useState(null);
 
-  const handleMouseEnteredLegend = useCallback(
+  const onMouseEnterLegend = useCallback(
     ({ dataKey }) => setActiveLegendItem(dataKey),
     []
   );
 
-  const handleMouseLeftLegend = useCallback(
-    () => setActiveLegendItem(null),
-    []
-  );
+  const onMouseLeaveLegend = useCallback(() => setActiveLegendItem(null), []);
+
+  const [isAnimating, setIsAnimating] = useState(null);
+
+  const onLineAnimationStart = useCallback(() => setIsAnimating(true), []);
+
+  const onLineAnimationEnd = useCallback(() => setIsAnimating(false), []);
 
   const emphasizeLine = useCallback(
-    (dataKey) => (dataKey === activeLegendItem ? emphasisStyle : null),
+    (dataKey) => styleLine({ activeDataKey: activeLegendItem, dataKey }),
     [activeLegendItem]
   );
 
-  const dynamicallyStyledLines = useMemo(
-    () =>
-      lines.map((line) => ({ ...line, style: emphasizeLine(line.dataKey) })),
-    [lines, emphasizeLine]
+  const dots = useMemo(
+    () => (!isAnimating ? getLineReferenceDots({ chartData, lines }) : []),
+    [lines, chartData, isAnimating]
   );
 
-  const referenceDots = useMemo(
-    () => getReferenceDots({ chartData, lines }),
-    [lines, chartData]
+  const [activeDot, setActiveDot] = useState({});
+
+  const onMouseEnterDot = useCallback(({ x, y }) => setActiveDot({ x, y }), []);
+
+  const onMouseLeaveDot = useCallback(() => setActiveDot({}), []);
+
+  const emphasizeDot = useCallback(
+    ({ dataKey, ...coordinates }) =>
+      styleDot({
+        activeDataKey: activeLegendItem,
+        activeCoordinates: activeDot,
+        coordinates,
+        dataKey,
+      }),
+    [activeDot, activeLegendItem]
   );
+
+  const isTooltipActive = "x" in activeDot && "y" in activeDot;
 
   // * legend hover event
   // * dot style
   // * legend shapes match lines with filled dots style
-  // ! tooltip only on dot hover
-  // ! dot hover event
+  // * dot hover event
+  // * tooltip only on dot hover
+  // * stack legend
+  // ! tooltip content (may want to remove active line as well)
+  // ! calendar popover
   // ! filters
   // ? anything used as a prop or dependency should have optimal referential equality across renders
   // ? (won't cause unnecessary rerenders if you choose to memoize components)
@@ -129,18 +150,36 @@ export default function App() {
               axisLine={false}
               tickLine={false}
             />
-            <Tooltip formatter={valueFormatter} />
+            <Tooltip formatter={valueFormatter} active={isTooltipActive} />
             <Legend
               content={<CustomizedLegend></CustomizedLegend>}
-              onMouseEnter={handleMouseEnteredLegend}
-              onMouseLeave={handleMouseLeftLegend}
+              onMouseEnter={onMouseEnterLegend}
+              onMouseLeave={onMouseLeaveLegend}
               verticalAlign="top"
+              layout="vertical"
+              align="right"
+              iconSize={16}
             />
-            {dynamicallyStyledLines.map((props, index) => (
-              <Line {...props} key={index}></Line>
+            {lines.map(({ dataKey, ...rest }) => (
+              <Line
+                onAnimationStart={onLineAnimationStart}
+                onAnimationEnd={onLineAnimationEnd}
+                style={emphasizeLine(dataKey)}
+                dataKey={dataKey}
+                key={dataKey}
+                {...rest}
+              ></Line>
             ))}
-            {referenceDots.map((props, index) => (
-              <ReferenceDot {...props} key={index}></ReferenceDot>
+            {dots.map(({ dataKey, x, y, ...rest }, index) => (
+              <ReferenceDot
+                style={emphasizeDot({ dataKey, x, y })}
+                onMouseEnter={onMouseEnterDot}
+                onMouseLeave={onMouseLeaveDot}
+                key={index}
+                x={x}
+                y={y}
+                {...rest}
+              ></ReferenceDot>
             ))}
           </LineChart>
         </ResponsiveContainer>
@@ -149,15 +188,10 @@ export default function App() {
   );
 }
 
-// ? active dot based on if line is being also being hovered???
-
 const {
+  pivotDefs: { pivotOn: xAxisDataKey },
   xAxisTickFormatter,
   fileListPromise,
   valueFormatter,
-  emphasisStyle,
   xAxisPadding,
-  pivotDefs,
 } = constants;
-
-const { pivotOn: xAxisDataKey } = pivotDefs;
