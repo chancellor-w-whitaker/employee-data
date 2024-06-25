@@ -14,7 +14,7 @@ export const constants = {
     pivotOn: "date",
   },
   xAxisTickFormatter: (dateString) => new Date(dateString).getFullYear(),
-  genericLineProps: { type: "monotone", strokeWidth: 2, dot: false },
+  genericLineProps: { type: "monotone", strokeWidth: 2 },
   valueFormatter: (value) => value.toLocaleString(),
   fileListPromise: csv("Data/_fileList.csv"),
   xAxisPadding: { right: 30, left: 30 },

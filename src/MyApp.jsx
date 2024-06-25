@@ -14,7 +14,7 @@ import { csv } from "d3-fetch";
 import { specificLineProps } from "./constants/specificLineProps";
 import { useResettableState } from "./hooks/useResettableState";
 import { MainContainer } from "./components/MainContainer";
-import { renderLegend } from "./helpers/renderLegend";
+import { renderLegend } from "./constants/renderLegend";
 import { fileToDate } from "./helpers/fileToDate";
 import { usePromise } from "./hooks/usePromise";
 import { pivotData } from "./helpers/pivotData";
@@ -24,124 +24,54 @@ import { constants } from "./constants";
 export default function MyApp() {
   const fileList = usePromise(fileListPromise);
 
-  const defaultDate = useMemo(() => {
-    const defaultFile = fileList.find(
-      ({ default: isDefault }) => isDefault === "Y"
-    );
-
-    return fileToDate(defaultFile);
-  }, [fileList]);
+  const defaultDate = useMemo(() => getDefaultDate(fileList), [fileList]);
 
   const [date, setDate] = useResettableState(defaultDate);
 
-  const dataFiles = useMemo(() => {
-    const [calendarMonth, calendarDay] = date.toLocaleDateString().split("/");
-
-    return fileList.filter(
-      ({ month, day }) => month === calendarMonth && day === calendarDay
-    );
-  }, [date, fileList]);
+  const dataFiles = useMemo(
+    () => getDataFiles({ fileList, date }),
+    [date, fileList]
+  );
 
   const dataArraysPromise = useMemo(
-    () => Promise.all(dataFiles.map(({ web_path }) => csv(web_path))),
+    () => getDataArraysPromise(dataFiles),
     [dataFiles]
   );
 
   const dataArrays = usePromise(dataArraysPromise);
 
-  const aggregableData = useMemo(() => {
-    return dataArrays
-      .map((array, index) =>
-        array.map((row) => {
-          const rowDate = fileToDate(dataFiles[index]).toLocaleDateString();
-
-          const numericValues = Object.fromEntries(
-            Object.keys(row)
-              .filter((key) => numericColumns.includes(key))
-              .map((key) => [key, Number(row[key])])
-          );
-
-          return {
-            ...row,
-            ...numericValues,
-            date: rowDate,
-          };
-        })
-      )
-      .flat();
-  }, [dataArrays, dataFiles]);
-
-  const { lines, data } = useMemo(() => {
-    const pivotedData = pivotData({ ...pivotDefs, data: aggregableData });
-
-    const groupData = pivotedData.rowData.map((row) => {
-      const group = groupBy.map((key) => row[key]).join(" ");
-
-      const dateValues = Object.fromEntries(
-        Object.entries(row)
-          .filter(([key, value]) => typeof value === "object")
-          .map(([key, object]) => [key, object[activeNumericColumn]])
-      );
-
-      return { group, ...dateValues };
-    });
-
-    const dates = {};
-
-    groupData.forEach((row) => {
-      Object.keys(row)
-        .filter((key) => key !== "group")
-        .forEach((dateString) => {
-          if (!(dateString in dates)) {
-            dates[dateString] = { date: dateString };
-          }
-
-          const chartElement = dates[dateString];
-
-          const [xAxisValue, yAxisValue] = [row.group, row[dateString]];
-
-          chartElement[xAxisValue] = yAxisValue;
-        });
-    });
-
-    const data = Object.values(dates).sort(
-      ({ date: dateA }, { date: dateB }) => new Date(dateA) - new Date(dateB)
-    );
-
-    const lines = groupData.map(({ group: dataKey }) => ({
-      ...genericLineProps,
-      ...specificLineProps[dataKey],
-    }));
-
-    return { lines, data };
-  }, [aggregableData]);
-
-  const validDatesSet = useMemo(
-    () =>
-      new Set(fileList.map((file) => fileToDate(file).toLocaleDateString())),
-    [fileList]
+  const aggregableData = useMemo(
+    () => makeDataAggregable({ dataArrays, dataFiles }),
+    [dataArrays, dataFiles]
   );
+
+  const { lines, data } = useMemo(
+    () => getChartProperties(aggregableData),
+    [aggregableData]
+  );
+
+  const validDatesSet = useMemo(() => getSetOfValidDates(fileList), [fileList]);
 
   const tileDisabled = useCallback(
     ({ date }) => !validDatesSet.has(date.toLocaleDateString()),
     [validDatesSet]
   );
 
-  const [hoveredLegendItem, setHoveredLegendItem] = useState();
+  const [activeLegendItem, setActiveLegendItem] = useState(null);
 
-  const handleMouseEnter = useCallback(
-    ({ dataKey }) => setHoveredLegendItem(dataKey),
+  const handleMouseEnterLegend = useCallback(
+    ({ dataKey }) => setActiveLegendItem(dataKey),
     []
   );
 
-  const handleMouseLeave = useCallback(() => setHoveredLegendItem(null), []);
+  const handleMouseLeaveLegend = useCallback(
+    () => setActiveLegendItem(null),
+    []
+  );
 
   const getLineStyle = useCallback(
-    (dataKey) =>
-      dataKey === hoveredLegendItem
-        ? { filter: "drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5))" }
-        : null,
-    [hoveredLegendItem]
+    (dataKey) => (dataKey === activeLegendItem ? hoveredStyle : null),
+    [activeLegendItem]
   );
 
   // * legend hover event
@@ -186,8 +116,8 @@ export default function MyApp() {
             />
             <Tooltip formatter={valueFormatter} />
             <Legend
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+              onMouseEnter={handleMouseEnterLegend}
+              onMouseLeave={handleMouseLeaveLegend}
               content={renderLegend}
               verticalAlign="top"
             />
@@ -206,6 +136,10 @@ export default function MyApp() {
   );
 }
 
+const hoveredStyle = { filter: "drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5))" };
+
+// ? active dot based on if line is being also being hovered???
+
 const {
   xAxisTickFormatter,
   genericLineProps,
@@ -218,3 +152,93 @@ const {
 const { sumUp: numericColumns, pivotOn: xAxisDataKey, groupBy } = pivotDefs;
 
 const activeNumericColumn = numericColumns[0];
+
+const getDefaultDate = (fileList) => {
+  const defaultFile = fileList.find(
+    ({ default: isDefault }) => isDefault === "Y"
+  );
+
+  return fileToDate(defaultFile);
+};
+
+const getDataFiles = ({ fileList, date }) => {
+  const [calendarMonth, calendarDay] = date.toLocaleDateString().split("/");
+
+  return fileList.filter(
+    ({ month, day }) => month === calendarMonth && day === calendarDay
+  );
+};
+
+const getDataArraysPromise = (dataFiles) => {
+  return Promise.all(dataFiles.map(({ web_path }) => csv(web_path)));
+};
+
+const makeDataAggregable = ({ dataArrays, dataFiles }) => {
+  return dataArrays
+    .map((array, index) =>
+      array.map((row) => {
+        const rowDate = fileToDate(dataFiles[index]).toLocaleDateString();
+
+        const numericValues = Object.fromEntries(
+          Object.keys(row)
+            .filter((key) => numericColumns.includes(key))
+            .map((key) => [key, Number(row[key])])
+        );
+
+        return {
+          ...row,
+          ...numericValues,
+          date: rowDate,
+        };
+      })
+    )
+    .flat();
+};
+
+const getChartProperties = (aggregableData) => {
+  const pivotedData = pivotData({ ...pivotDefs, data: aggregableData });
+
+  const groupData = pivotedData.rowData.map((row) => {
+    const group = groupBy.map((key) => row[key]).join(" ");
+
+    const dateValues = Object.fromEntries(
+      Object.entries(row)
+        .filter(([key, value]) => typeof value === "object")
+        .map(([key, object]) => [key, object[activeNumericColumn]])
+    );
+
+    return { group, ...dateValues };
+  });
+
+  const dates = {};
+
+  groupData.forEach((row) => {
+    Object.keys(row)
+      .filter((key) => key !== "group")
+      .forEach((dateString) => {
+        if (!(dateString in dates)) {
+          dates[dateString] = { date: dateString };
+        }
+
+        const chartElement = dates[dateString];
+
+        const [xAxisValue, yAxisValue] = [row.group, row[dateString]];
+
+        chartElement[xAxisValue] = yAxisValue;
+      });
+  });
+
+  const data = Object.values(dates).sort(
+    ({ date: dateA }, { date: dateB }) => new Date(dateA) - new Date(dateB)
+  );
+
+  const lines = groupData.map(({ group: dataKey }) => ({
+    ...genericLineProps,
+    ...specificLineProps[dataKey],
+  }));
+
+  return { lines, data };
+};
+
+const getSetOfValidDates = (fileList) =>
+  new Set(fileList.map((file) => fileToDate(file).toLocaleDateString()));
