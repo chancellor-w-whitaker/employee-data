@@ -8,16 +8,21 @@ import {
   YAxis,
   Line,
 } from "recharts";
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import Calendar from "react-calendar";
 
 import { getDataArraysPromise } from "./helpers/getDataArraysPromise";
 import { getLineReferenceDots } from "./helpers/getLineReferenceDots";
+import { useActiveReferenceDot } from "./hooks/useActiveReferenceDot";
+import { toSortedByIndexOfKey } from "./helpers/toSortedByIndexOfKey";
 import { makeDataAggregable } from "./helpers/makeDataAggregable";
 import { getChartProperties } from "./helpers/getChartProperties";
 import { getSetOfValidDates } from "./helpers/getSetOfValidDates";
+import { useActiveLegendItem } from "./hooks/useActiveLegendItem";
 import { CustomizedLegend } from "./components/CustomizedLegend";
 import { useResettableState } from "./hooks/useResettableState";
+import { useIsLineAnimating } from "./hooks/useIsLineAnimating";
+import { useIsPopoverOpen } from "./hooks/useIsPopoverOpen";
 import { getDefaultDate } from "./helpers/getDefaultDate";
 import { getDataFiles } from "./helpers/getDataFiles";
 import { usePromise } from "./hooks/usePromise";
@@ -58,43 +63,42 @@ export default function App() {
     [aggregableData]
   );
 
-  const validDatesSet = useMemo(() => getSetOfValidDates(fileList), [fileList]);
+  const {
+    lastDataKey: mostRecentActiveItem,
+    history: legendItemsOrder,
+    isActive,
+    ...legendMouseHandlers
+  } = useActiveLegendItem();
 
-  const tileDisabled = useCallback(
-    ({ date }) => !validDatesSet.has(date.toLocaleDateString()),
-    [validDatesSet]
+  const activeLegendItem = isActive ? mostRecentActiveItem : null;
+
+  const { state: isLineAnimating, ...lineAnimationHandlers } =
+    useIsLineAnimating();
+
+  const { coordinates: activeDot, ...dotMouseHandlers } =
+    useActiveReferenceDot();
+
+  const { isOpen: isPopoverOpen, ...toggleHandlers } = useIsPopoverOpen();
+
+  const dots = useMemo(
+    () => (!isLineAnimating ? getLineReferenceDots({ chartData, lines }) : []),
+    [lines, chartData, isLineAnimating]
   );
 
-  const [activeLegendItem, setActiveLegendItem] = useState(null);
-
-  const onMouseEnterLegend = useCallback(
-    ({ dataKey }) => setActiveLegendItem(dataKey),
-    []
+  const dotsSortedByLastActiveItem = useMemo(
+    () =>
+      toSortedByIndexOfKey({
+        order: legendItemsOrder,
+        key: "dataKey",
+        payload: dots,
+      }),
+    [legendItemsOrder, dots]
   );
-
-  const onMouseLeaveLegend = useCallback(() => setActiveLegendItem(null), []);
-
-  const [isAnimating, setIsAnimating] = useState(null);
-
-  const onLineAnimationStart = useCallback(() => setIsAnimating(true), []);
-
-  const onLineAnimationEnd = useCallback(() => setIsAnimating(false), []);
 
   const emphasizeLine = useCallback(
     (dataKey) => styleLine({ activeDataKey: activeLegendItem, dataKey }),
     [activeLegendItem]
   );
-
-  const dots = useMemo(
-    () => (!isAnimating ? getLineReferenceDots({ chartData, lines }) : []),
-    [lines, chartData, isAnimating]
-  );
-
-  const [activeDot, setActiveDot] = useState({});
-
-  const onMouseEnterDot = useCallback(({ x, y }) => setActiveDot({ x, y }), []);
-
-  const onMouseLeaveDot = useCallback(() => setActiveDot({}), []);
 
   const emphasizeDot = useCallback(
     ({ dataKey, ...coordinates }) =>
@@ -107,11 +111,14 @@ export default function App() {
     [activeDot, activeLegendItem]
   );
 
+  const validDatesSet = useMemo(() => getSetOfValidDates(fileList), [fileList]);
+
+  const tileDisabled = useCallback(
+    ({ date }) => !validDatesSet.has(date.toLocaleDateString()),
+    [validDatesSet]
+  );
+
   const isTooltipActive = "x" in activeDot && "y" in activeDot;
-
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-
-  const onToggle = useCallback((isOpen) => setIsPopoverOpen(isOpen), []);
 
   // * legend hover event
   // * dot style
@@ -147,7 +154,7 @@ export default function App() {
                 <i className="bi bi-calendar"></i>
               </Button>
             }
-            onToggle={onToggle}
+            {...toggleHandlers}
           ></Popover>
           <div className="fs-4">{date.toLocaleDateString()}</div>
         </div>
@@ -173,8 +180,7 @@ export default function App() {
             />
             <Legend
               content={<CustomizedLegend></CustomizedLegend>}
-              onMouseEnter={onMouseEnterLegend}
-              onMouseLeave={onMouseLeaveLegend}
+              {...legendMouseHandlers}
               verticalAlign="top"
               layout="vertical"
               align="right"
@@ -182,25 +188,25 @@ export default function App() {
             />
             {lines.map(({ dataKey, ...rest }) => (
               <Line
-                onAnimationStart={onLineAnimationStart}
-                onAnimationEnd={onLineAnimationEnd}
+                {...lineAnimationHandlers}
                 style={emphasizeLine(dataKey)}
                 dataKey={dataKey}
                 key={dataKey}
                 {...rest}
               ></Line>
             ))}
-            {dots.map(({ dataKey, x, y, ...rest }, index) => (
-              <ReferenceDot
-                style={emphasizeDot({ dataKey, x, y })}
-                onMouseEnter={onMouseEnterDot}
-                onMouseLeave={onMouseLeaveDot}
-                key={index}
-                x={x}
-                y={y}
-                {...rest}
-              ></ReferenceDot>
-            ))}
+            {dotsSortedByLastActiveItem.map(
+              ({ dataKey, x, y, ...rest }, index) => (
+                <ReferenceDot
+                  style={emphasizeDot({ dataKey, x, y })}
+                  {...dotMouseHandlers}
+                  key={index}
+                  x={x}
+                  y={y}
+                  {...rest}
+                ></ReferenceDot>
+              )
+            )}
           </LineChart>
         </ResponsiveContainer>
       </Content>

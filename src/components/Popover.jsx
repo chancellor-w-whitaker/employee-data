@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 
-export const Popover = ({ openWith, onToggle, hide }) => {
-  const { popover, isOpen, open } = usePopover(onToggle);
+export const Popover = ({ openWith, onClose, onOpen, hide }) => {
+  const { popover, isOpen, open } = usePopover({ onClose, onOpen });
 
   return (
     <div className="position-relative">
@@ -19,35 +19,27 @@ export const Popover = ({ openWith, onToggle, hide }) => {
   );
 };
 
-const usePopover = (onToggle) => {
+const usePopover = ({ onClose, onOpen }) => {
   const popover = useRef();
 
   const [isOpen, toggle] = useState(false);
 
-  const open = useCallback(() => toggle(true), []);
+  const open = useCallback(() => {
+    typeof onOpen === "function" && onOpen();
 
-  const close = useCallback(() => toggle(false), []);
+    toggle(true);
+  }, [onOpen]);
+
+  const close = useCallback(() => {
+    typeof onClose === "function" && onClose();
+
+    toggle(false);
+  }, [onClose]);
 
   useClickOutside(popover, close);
 
-  useEffect(() => {
-    typeof onToggle === "function" && onToggle(isOpen);
-  }, [isOpen, onToggle]);
-
-  // usePreviousState(isOpen, onToggle);
-
   return { popover, isOpen, open };
 };
-
-// const usePreviousState = (value, doSomething) => {
-//   const [previousValue, setPreviousValue] = useState(value);
-
-//   if (previousValue !== value) {
-//     setPreviousValue(value);
-
-//     typeof doSomething === "function" && doSomething(previousValue);
-//   }
-// };
 
 // Improved version of https://usehooks.com/useOnClickOutside/
 const useClickOutside = (ref, handler) => {
