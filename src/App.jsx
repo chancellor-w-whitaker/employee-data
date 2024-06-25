@@ -22,8 +22,10 @@ import { getDefaultDate } from "./helpers/getDefaultDate";
 import { getDataFiles } from "./helpers/getDataFiles";
 import { usePromise } from "./hooks/usePromise";
 import { styleLine } from "./helpers/styleLine";
+import { Popover } from "./components/Popover";
 import { Content } from "./components/Content";
 import { styleDot } from "./helpers/styleDot";
+import { Button } from "./components/Button";
 import { Main } from "./components/Main";
 import { constants } from "./constants";
 
@@ -107,14 +109,18 @@ export default function App() {
 
   const isTooltipActive = "x" in activeDot && "y" in activeDot;
 
+  const [popoverState, setPopoverState] = useState(false);
+
+  const onToggle = (previousState) => setPopoverState(!previousState);
+
   // * legend hover event
   // * dot style
   // * legend shapes match lines with filled dots style
   // * dot hover event
   // * tooltip only on dot hover
   // * stack legend
+  // * calendar popover
   // ! tooltip content (may want to remove active line as well)
-  // ! calendar popover
   // ! filters
   // ? anything used as a prop or dependency should have optimal referential equality across renders
   // ? (won't cause unnecessary rerenders if you choose to memoize components)
@@ -126,15 +132,26 @@ export default function App() {
         <h1 className="display-6 mb-0">Faculty/Staff Employee Data</h1>
       </Content>
       <Content>
-        <Calendar
-          tileDisabled={tileDisabled}
-          className="shadow-sm"
-          onChange={setDate}
-          value={date}
-        />
-      </Content>
-      <Content>
-        <div className="fs-4">{date.toLocaleDateString()}</div>
+        <div className="d-flex gap-3">
+          <Popover
+            hide={
+              <Calendar
+                tileDisabled={tileDisabled}
+                className="shadow-lg"
+                onChange={setDate}
+                value={date}
+              />
+            }
+            openWith={
+              <Button className="bg-gradient shadow-sm" active={popoverState}>
+                <i className="bi bi-calendar"></i>
+              </Button>
+            }
+            onToggle={onToggle}
+          ></Popover>
+
+          <div className="fs-4">{date.toLocaleDateString()}</div>
+        </div>
       </Content>
       <Content>
         <ResponsiveContainer height={400}>

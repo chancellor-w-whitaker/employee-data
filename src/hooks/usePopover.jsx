@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 
-export const usePopover = () => {
+import { usePreviousState } from "./usePreviousState";
+
+export const usePopover = (onToggle) => {
   const popover = useRef();
 
   const [isOpen, toggle] = useState(false);
@@ -10,6 +12,8 @@ export const usePopover = () => {
   const close = useCallback(() => toggle(false), []);
 
   useClickOutside(popover, close);
+
+  usePreviousState(isOpen, onToggle);
 
   return { popover, isOpen, open };
 };
