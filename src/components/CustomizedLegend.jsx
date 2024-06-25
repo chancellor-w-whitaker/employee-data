@@ -1,4 +1,4 @@
-export const renderLegend = (props) => {
+export const CustomizedLegend = (props) => {
   const { onMouseEnter, onMouseLeave, iconSize, payload } = props;
 
   return (
@@ -29,9 +29,9 @@ export const renderLegend = (props) => {
             <desc />
             <path
               d="M0,16h10.666666666666666
-        A5.333333333333333,5.333333333333333,0,1,1,21.333333333333332,16
-        H32M21.333333333333332,16
-        A5.333333333333333,5.333333333333333,0,1,1,10.666666666666666,16"
+          A5.333333333333333,5.333333333333333,0,1,1,21.333333333333332,16
+          H32M21.333333333333332,16
+          A5.333333333333333,5.333333333333333,0,1,1,10.666666666666666,16"
               className="recharts-legend-icon"
               strokeWidth={4}
               stroke={color}
