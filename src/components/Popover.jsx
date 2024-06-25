@@ -30,20 +30,24 @@ const usePopover = (onToggle) => {
 
   useClickOutside(popover, close);
 
-  usePreviousState(isOpen, onToggle);
+  useEffect(() => {
+    typeof onToggle === "function" && onToggle(isOpen);
+  }, [isOpen, onToggle]);
+
+  // usePreviousState(isOpen, onToggle);
 
   return { popover, isOpen, open };
 };
 
-const usePreviousState = (value, doSomething) => {
-  const [previousValue, setPreviousValue] = useState(value);
+// const usePreviousState = (value, doSomething) => {
+//   const [previousValue, setPreviousValue] = useState(value);
 
-  if (previousValue !== value) {
-    setPreviousValue(value);
+//   if (previousValue !== value) {
+//     setPreviousValue(value);
 
-    typeof doSomething === "function" && doSomething(previousValue);
-  }
-};
+//     typeof doSomething === "function" && doSomething(previousValue);
+//   }
+// };
 
 // Improved version of https://usehooks.com/useOnClickOutside/
 const useClickOutside = (ref, handler) => {

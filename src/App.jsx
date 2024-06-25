@@ -109,9 +109,9 @@ export default function App() {
 
   const isTooltipActive = "x" in activeDot && "y" in activeDot;
 
-  const [popoverState, setPopoverState] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  const onToggle = (previousState) => setPopoverState(!previousState);
+  const onToggle = useCallback((isOpen) => setIsPopoverOpen(isOpen), []);
 
   // * legend hover event
   // * dot style
@@ -143,13 +143,12 @@ export default function App() {
               />
             }
             openWith={
-              <Button className="bg-gradient shadow-sm" active={popoverState}>
+              <Button className="bg-gradient shadow-sm" active={isPopoverOpen}>
                 <i className="bi bi-calendar"></i>
               </Button>
             }
             onToggle={onToggle}
           ></Popover>
-
           <div className="fs-4">{date.toLocaleDateString()}</div>
         </div>
       </Content>
