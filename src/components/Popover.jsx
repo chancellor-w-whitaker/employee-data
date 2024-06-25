@@ -4,14 +4,10 @@ export const Popover = ({ openWith, onClose, onOpen, hide }) => {
   const { popover, isOpen, open } = usePopover({ onClose, onOpen });
 
   return (
-    <div className="position-relative">
+    <div style={{ position: "relative" }}>
       <div onClickCapture={open}>{openWith}</div>
       {isOpen && (
-        <div
-          className="position-absolute"
-          style={{ zIndex: 1000 }}
-          ref={popover}
-        >
+        <div style={{ position: "absolute", zIndex: 1000 }} ref={popover}>
           {hide}
         </div>
       )}

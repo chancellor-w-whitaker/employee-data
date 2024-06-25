@@ -127,6 +127,7 @@ export default function App() {
   // * tooltip only on dot hover
   // * stack legend
   // * calendar popover
+  // ? maybe change style of calendar button + label next to it
   // ! tooltip content (may want to remove active line as well)
   // ! filters
   // ? anything used as a prop or dependency should have optimal referential equality across renders
