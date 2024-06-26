@@ -11,31 +11,39 @@ import {
 import { useCallback, useMemo } from "react";
 import Calendar from "react-calendar";
 
+import { useActiveLineReferenceDot as useActiveReferenceDot } from "./hooks/useActiveLineReferenceDot";
+import { sortDotsByActivityHistory } from "./helpers/sortDotsByActivityHistory";
 import { getDataArraysPromise } from "./helpers/getDataArraysPromise";
 import { getLineReferenceDots } from "./helpers/getLineReferenceDots";
-import { useActiveReferenceDot } from "./hooks/useActiveReferenceDot";
-import { toSortedByIndexOfKey } from "./helpers/toSortedByIndexOfKey";
+import { CustomizedTooltip } from "./components/CustomizedTooltip";
 import { makeDataAggregable } from "./helpers/makeDataAggregable";
 import { getChartProperties } from "./helpers/getChartProperties";
 import { getSetOfValidDates } from "./helpers/getSetOfValidDates";
-import { useActiveLegendItem } from "./hooks/useActiveLegendItem";
 import { CustomizedLegend } from "./components/CustomizedLegend";
 import { useResettableState } from "./hooks/useResettableState";
 import { useIsLineAnimating } from "./hooks/useIsLineAnimating";
+import { useLegendActivity } from "./hooks/useLegendActivity";
 import { useIsPopoverOpen } from "./hooks/useIsPopoverOpen";
 import { getDefaultDate } from "./helpers/getDefaultDate";
 import { getDataFiles } from "./helpers/getDataFiles";
 import { usePromise } from "./hooks/usePromise";
-import { styleLine } from "./helpers/styleLine";
 import { Popover } from "./components/Popover";
 import { Content } from "./components/Content";
-import { styleDot } from "./helpers/styleDot";
 import { Button } from "./components/Button";
 import { Main } from "./components/Main";
 import { constants } from "./constants";
 
 export default function App() {
+  const { state: isPopoverOpen, ...toggleHandlers } = useIsPopoverOpen();
+
   const fileList = usePromise(fileListPromise);
+
+  const validDatesSet = useMemo(() => getSetOfValidDates(fileList), [fileList]);
+
+  const tileDisabled = useCallback(
+    ({ date }) => !validDatesSet.has(date.toLocaleDateString()),
+    [validDatesSet]
+  );
 
   const defaultDate = useMemo(() => getDefaultDate(fileList), [fileList]);
 
@@ -64,61 +72,35 @@ export default function App() {
   );
 
   const {
-    lastDataKey: mostRecentActiveItem,
-    history: legendItemsOrder,
-    isActive,
+    activeDataKey: activeLegendItem,
+    history: legendActivityHistory,
+    style: styleLine,
     ...legendMouseHandlers
-  } = useActiveLegendItem();
-
-  const activeLegendItem = isActive ? mostRecentActiveItem : null;
+  } = useLegendActivity();
 
   const { state: isLineAnimating, ...lineAnimationHandlers } =
     useIsLineAnimating();
 
-  const { coordinates: activeDot, ...dotMouseHandlers } =
-    useActiveReferenceDot();
-
-  const { isOpen: isPopoverOpen, ...toggleHandlers } = useIsPopoverOpen();
-
   const dots = useMemo(
-    () => (!isLineAnimating ? getLineReferenceDots({ chartData, lines }) : []),
+    () =>
+      !isLineAnimating ? getLineReferenceDots({ data: chartData, lines }) : [],
     [lines, chartData, isLineAnimating]
   );
 
-  const dotsSortedByLastActiveItem = useMemo(
+  const dotsSorted = useMemo(
     () =>
-      toSortedByIndexOfKey({
-        order: legendItemsOrder,
-        key: "dataKey",
-        payload: dots,
+      sortDotsByActivityHistory({
+        activityHistory: legendActivityHistory,
+        dots,
       }),
-    [legendItemsOrder, dots]
+    [legendActivityHistory, dots]
   );
 
-  const emphasizeLine = useCallback(
-    (dataKey) => styleLine({ activeDataKey: activeLegendItem, dataKey }),
-    [activeLegendItem]
-  );
-
-  const emphasizeDot = useCallback(
-    ({ dataKey, ...coordinates }) =>
-      styleDot({
-        activeDataKey: activeLegendItem,
-        activeCoordinates: activeDot,
-        coordinates,
-        dataKey,
-      }),
-    [activeDot, activeLegendItem]
-  );
-
-  const validDatesSet = useMemo(() => getSetOfValidDates(fileList), [fileList]);
-
-  const tileDisabled = useCallback(
-    ({ date }) => !validDatesSet.has(date.toLocaleDateString()),
-    [validDatesSet]
-  );
-
-  const isTooltipActive = "x" in activeDot && "y" in activeDot;
+  const {
+    isTooltipActive,
+    style: styleDot,
+    ...dotMouseHandlers
+  } = useActiveReferenceDot({ activeLine: activeLegendItem, dots });
 
   // * legend hover event
   // * dot style
@@ -142,20 +124,20 @@ export default function App() {
       <Content>
         <div className="d-flex gap-3">
           <Popover
+            {...toggleHandlers}
             hide={
               <Calendar
                 tileDisabled={tileDisabled}
                 className="shadow-lg"
                 onChange={setDate}
                 value={date}
-              />
+              ></Calendar>
             }
             openWith={
               <Button className="bg-gradient shadow-sm" active={isPopoverOpen}>
                 <i className="bi bi-calendar"></i>
               </Button>
             }
-            {...toggleHandlers}
           ></Popover>
           <div className="fs-4">{date.toLocaleDateString()}</div>
         </div>
@@ -168,46 +150,41 @@ export default function App() {
               padding={xAxisPadding}
               dataKey={xAxisDataKey}
               tickLine={false}
-            />
+            ></XAxis>
             <YAxis
               tickFormatter={valueFormatter}
               axisLine={false}
               tickLine={false}
-            />
+              tickCount={6}
+            ></YAxis>
             <Tooltip
+              content={<CustomizedTooltip></CustomizedTooltip>}
               formatter={valueFormatter}
               wrapperClassName="shadow"
               active={isTooltipActive}
-            />
+            ></Tooltip>
             <Legend
-              content={<CustomizedLegend></CustomizedLegend>}
               {...legendMouseHandlers}
+              content={<CustomizedLegend></CustomizedLegend>}
               verticalAlign="top"
               layout="vertical"
               align="right"
               iconSize={16}
-            />
-            {lines.map(({ dataKey, ...rest }) => (
+            ></Legend>
+            {lines.map((line, index) => (
               <Line
-                {...lineAnimationHandlers}
-                style={emphasizeLine(dataKey)}
-                dataKey={dataKey}
-                key={dataKey}
-                {...rest}
+                {...{ ...line, ...lineAnimationHandlers }}
+                style={styleLine(line)}
+                key={index}
               ></Line>
             ))}
-            {dotsSortedByLastActiveItem.map(
-              ({ dataKey, x, y, ...rest }, index) => (
-                <ReferenceDot
-                  style={emphasizeDot({ dataKey, x, y })}
-                  {...dotMouseHandlers}
-                  key={index}
-                  x={x}
-                  y={y}
-                  {...rest}
-                ></ReferenceDot>
-              )
-            )}
+            {dotsSorted.map((dot, index) => (
+              <ReferenceDot
+                {...{ ...dot, ...dotMouseHandlers }}
+                style={styleDot(dot)}
+                key={index}
+              ></ReferenceDot>
+            ))}
           </LineChart>
         </ResponsiveContainer>
       </Content>

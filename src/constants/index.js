@@ -28,7 +28,7 @@ export const constants = {
     sumUp: ["total"],
     pivotOn: "date",
   },
-  emphasisStyle: {
+  dropShadowStyle: {
     filter: "drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5))",
   },
   xAxisTickFormatter: (dateString) => new Date(dateString).getFullYear(),

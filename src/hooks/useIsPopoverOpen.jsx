@@ -7,5 +7,5 @@ export const useIsPopoverOpen = () => {
 
   const onClose = useCallback(() => setIsOpen(false), []);
 
-  return { onClose, onOpen, isOpen };
+  return { state: isOpen, onClose, onOpen };
 };

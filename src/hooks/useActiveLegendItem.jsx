@@ -1,30 +1,36 @@
 import { useCallback, useState } from "react";
 
 export const useActiveLegendItem = () => {
-  const [{ isActive, stack }, setState] = useState({
-    isActive: false,
-    stack: [],
+  const [{ isCurrentlyActive, history }, setState] = useState({
+    isCurrentlyActive: false,
+    history: [],
   });
 
-  const lastDataKey = stack[stack.length - 1];
+  const dataKey = history[history.length - 1];
 
   const onMouseEnter = useCallback(
     ({ dataKey }) =>
-      setState(({ stack }) => ({
-        stack: [...stack.filter((key) => key !== dataKey), dataKey],
-        isActive: true,
+      setState(({ history }) => ({
+        history: [...history.filter((key) => key !== dataKey), dataKey],
+        isCurrentlyActive: true,
       })),
     []
   );
 
   const onMouseLeave = useCallback(
     () =>
-      setState(({ stack }) => ({
-        isActive: false,
-        stack,
+      setState(({ history }) => ({
+        isCurrentlyActive: false,
+        history,
       })),
     []
   );
 
-  return { history: stack, onMouseEnter, onMouseLeave, lastDataKey, isActive };
+  return {
+    isCurrentlyActive,
+    onMouseEnter,
+    onMouseLeave,
+    dataKey,
+    history,
+  };
 };
