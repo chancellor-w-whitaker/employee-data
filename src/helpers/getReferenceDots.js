@@ -1,6 +1,6 @@
 import { constants } from "../constants";
 
-export const getLineReferenceDots = ({ lines, data }) => {
+export const getReferenceDots = ({ lines, data }) => {
   const dataKeyColors = Object.fromEntries(
     lines.map(({ dataKey, stroke }) => [dataKey, stroke])
   );

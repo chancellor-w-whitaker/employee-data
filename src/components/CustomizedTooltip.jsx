@@ -1,13 +1,27 @@
 import { getResultOfFormatter } from "../helpers/getResultOfFormatter";
+import { getFullClassName } from "../helpers/getFullClassName";
 
 export const CustomizedTooltip = (props) => {
-  const { wrapperClassName = "", formatter, separator, payload, label } = props;
+  const {
+    wrapperClassName = "",
+    payloadModifier,
+    labelClassName,
+    formatter,
+    separator,
+    payload,
+    label,
+  } = props;
+
+  const items = payload.map((item) => ({ ...item, separator }));
+
+  const relevantItems =
+    typeof payloadModifier === "function" ? payloadModifier(items) : items;
 
   return (
     <DefaultTooltip className={wrapperClassName}>
-      <TooltipLabel>{label}</TooltipLabel>
+      <TooltipLabel className={labelClassName}>{label}</TooltipLabel>
       <TooltipItemList>
-        {payload.map(({ value, color, name, unit }, index) => {
+        {relevantItems.map(({ value, name, ...rest }, index) => {
           const [formattedValue, formattedName] = getResultOfFormatter({
             formatter,
             value,
@@ -16,12 +30,10 @@ export const CustomizedTooltip = (props) => {
 
           return (
             <TooltipItem
+              {...rest}
               value={formattedValue}
-              separator={separator}
               name={formattedName}
-              color={color}
               key={index}
-              unit={unit}
             ></TooltipItem>
           );
         })}
@@ -54,9 +66,12 @@ const DefaultTooltip = ({ className = "", children }) => {
   );
 };
 
-const TooltipLabel = ({ children }) => {
+const TooltipLabel = ({ className = "", children }) => {
   return (
-    <p className="recharts-tooltip-label" style={{ margin: 0 }}>
+    <p
+      className={getFullClassName("recharts-tooltip-label", className)}
+      style={{ margin: 0 }}
+    >
       {children}
     </p>
   );
@@ -73,7 +88,14 @@ const TooltipItemList = ({ children }) => {
   );
 };
 
-const TooltipItem = ({ separator, color, value, name, unit }) => {
+const TooltipItem = ({
+  className = "",
+  separator,
+  color,
+  value,
+  name,
+  unit,
+}) => {
   return (
     <li
       style={{
@@ -82,7 +104,7 @@ const TooltipItem = ({ separator, color, value, name, unit }) => {
         paddingTop: 4,
         color,
       }}
-      className="recharts-tooltip-item"
+      className={getFullClassName("recharts-tooltip-item", className)}
     >
       <span className="recharts-tooltip-item-name">{name}</span>
       <span className="recharts-tooltip-item-separator">{separator}</span>

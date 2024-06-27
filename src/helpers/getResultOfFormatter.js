@@ -1,7 +1,7 @@
 export const getResultOfFormatter = ({
   formatter = (value, name) => [value, name],
-  value,
-  name,
+  value = "",
+  name = "",
 }) => {
   const result = formatter(value, name);
 

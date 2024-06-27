@@ -8,25 +8,20 @@ import {
   YAxis,
   Line,
 } from "recharts";
-import { useCallback, useMemo } from "react";
 import Calendar from "react-calendar";
+import { useMemo } from "react";
 
-import { useActiveLineReferenceDot as useActiveReferenceDot } from "./hooks/useActiveLineReferenceDot";
-import { sortDotsByActivityHistory } from "./helpers/sortDotsByActivityHistory";
-import { getDataArraysPromise } from "./helpers/getDataArraysPromise";
-import { getLineReferenceDots } from "./helpers/getLineReferenceDots";
+import { sortReferenceDotsByHistory } from "./helpers/sortReferenceDotsByHistory";
+import { useIsLineAnimationActive } from "./hooks/useIsLineAnimationActive";
+import { useActiveReferenceDot } from "./hooks/useActiveReferenceDot";
 import { CustomizedTooltip } from "./components/CustomizedTooltip";
-import { makeDataAggregable } from "./helpers/makeDataAggregable";
-import { getChartProperties } from "./helpers/getChartProperties";
-import { getSetOfValidDates } from "./helpers/getSetOfValidDates";
+import { useActiveLegendItem } from "./hooks/useActiveLegendItem";
 import { CustomizedLegend } from "./components/CustomizedLegend";
-import { useResettableState } from "./hooks/useResettableState";
-import { useIsLineAnimating } from "./hooks/useIsLineAnimating";
-import { useLegendActivity } from "./hooks/useLegendActivity";
+import { getReferenceDots } from "./helpers/getReferenceDots";
 import { useIsPopoverOpen } from "./hooks/useIsPopoverOpen";
-import { getDefaultDate } from "./helpers/getDefaultDate";
-import { getDataFiles } from "./helpers/getDataFiles";
-import { usePromise } from "./hooks/usePromise";
+import { getDotLine } from "./helpers/getDotLine";
+import { useFileList } from "./hooks/useFileList";
+import { isNumeric } from "./helpers/isNumeric";
 import { Popover } from "./components/Popover";
 import { Content } from "./components/Content";
 import { Button } from "./components/Button";
@@ -34,74 +29,74 @@ import { Main } from "./components/Main";
 import { constants } from "./constants";
 
 export default function App() {
-  const { state: isPopoverOpen, ...toggleHandlers } = useIsPopoverOpen();
+  const { localeDateString, lines, data, ...calendarProps } =
+    useFileList(fileListPromise);
 
-  const fileList = usePromise(fileListPromise);
-
-  const validDatesSet = useMemo(() => getSetOfValidDates(fileList), [fileList]);
-
-  const tileDisabled = useCallback(
-    ({ date }) => !validDatesSet.has(date.toLocaleDateString()),
-    [validDatesSet]
-  );
-
-  const defaultDate = useMemo(() => getDefaultDate(fileList), [fileList]);
-
-  const [date, setDate] = useResettableState(defaultDate);
-
-  const dataFiles = useMemo(
-    () => getDataFiles({ fileList, date }),
-    [date, fileList]
-  );
-
-  const dataArraysPromise = useMemo(
-    () => getDataArraysPromise(dataFiles),
-    [dataFiles]
-  );
-
-  const dataArrays = usePromise(dataArraysPromise);
-
-  const aggregableData = useMemo(
-    () => makeDataAggregable({ dataArrays, dataFiles }),
-    [dataArrays, dataFiles]
-  );
-
-  const { data: chartData, lines } = useMemo(
-    () => getChartProperties(aggregableData),
-    [aggregableData]
-  );
+  const { isPopoverOpen, ...toggleHandlers } = useIsPopoverOpen();
 
   const {
-    activeDataKey: activeLegendItem,
-    history: legendActivityHistory,
-    style: styleLine,
+    activeLegendItemHistory,
+    activeLegendItem,
+    styleLine,
     ...legendMouseHandlers
-  } = useLegendActivity();
+  } = useActiveLegendItem();
 
-  const { state: isLineAnimating, ...lineAnimationHandlers } =
-    useIsLineAnimating();
+  const { isLineAnimationActive, ...lineAnimationHandlers } =
+    useIsLineAnimationActive();
 
-  const dots = useMemo(
-    () =>
-      !isLineAnimating ? getLineReferenceDots({ data: chartData, lines }) : [],
-    [lines, chartData, isLineAnimating]
+  const referenceDots = useMemo(
+    () => (!isLineAnimationActive ? getReferenceDots({ lines, data }) : []),
+    [lines, data, isLineAnimationActive]
   );
 
-  const dotsSorted = useMemo(
+  const referenceDotsSorted = useMemo(
     () =>
-      sortDotsByActivityHistory({
-        activityHistory: legendActivityHistory,
-        dots,
+      sortReferenceDotsByHistory({
+        history: activeLegendItemHistory,
+        referenceDots,
       }),
-    [legendActivityHistory, dots]
+    [activeLegendItemHistory, referenceDots]
   );
 
   const {
+    activeReferenceDot,
+    styleReferenceDot,
     isTooltipActive,
-    style: styleDot,
     ...dotMouseHandlers
-  } = useActiveReferenceDot({ activeLine: activeLegendItem, dots });
+  } = useActiveReferenceDot({ activeLegendItem, referenceDots });
 
+  const lineOfActiveDot = activeReferenceDot
+    ? getDotLine(activeReferenceDot)
+    : null;
+
+  const indexOfActiveDotX = activeReferenceDot
+    ? data.findIndex(
+        ({ [xAxisDataKey]: xValue }) => xValue === activeReferenceDot.x
+      )
+    : -1;
+
+  const priorDataElement =
+    indexOfActiveDotX > 0 ? data[indexOfActiveDotX - 1] : null;
+
+  const priorYValue = priorDataElement
+    ? priorDataElement[lineOfActiveDot]
+    : null;
+
+  const currentYValue = activeReferenceDot ? activeReferenceDot.y : null;
+
+  const change =
+    isNumeric(currentYValue) && isNumeric(priorYValue)
+      ? currentYValue - priorYValue
+      : null;
+
+  const tooltipPayloadModifier = getPayloadModifier({
+    changeFromLastYear: change,
+    lineName: lineOfActiveDot,
+  });
+
+  const tooltipWrapperClassName = getWrapperClassName(change);
+
+  // ? maybe change style of calendar button + label next to it
   // * legend hover event
   // * dot style
   // * legend shapes match lines with filled dots style
@@ -109,8 +104,7 @@ export default function App() {
   // * tooltip only on dot hover
   // * stack legend
   // * calendar popover
-  // ? maybe change style of calendar button + label next to it
-  // ! tooltip content (may want to remove active line as well)
+  // * tooltip content (may want to remove active line as well)
   // ! filters
   // ? anything used as a prop or dependency should have optimal referential equality across renders
   // ? (won't cause unnecessary rerenders if you choose to memoize components)
@@ -125,26 +119,21 @@ export default function App() {
         <div className="d-flex gap-3">
           <Popover
             {...toggleHandlers}
-            hide={
-              <Calendar
-                tileDisabled={tileDisabled}
-                className="shadow-lg"
-                onChange={setDate}
-                value={date}
-              ></Calendar>
-            }
             openWith={
               <Button className="bg-gradient shadow-sm" active={isPopoverOpen}>
                 <i className="bi bi-calendar"></i>
               </Button>
             }
+            hide={
+              <Calendar className="shadow-lg" {...calendarProps}></Calendar>
+            }
           ></Popover>
-          <div className="fs-4">{date.toLocaleDateString()}</div>
+          <div className="fs-4">{localeDateString}</div>
         </div>
       </Content>
       <Content>
         <ResponsiveContainer height={400}>
-          <LineChart data={chartData}>
+          <LineChart data={data}>
             <XAxis
               tickFormatter={xAxisTickFormatter}
               padding={xAxisPadding}
@@ -159,9 +148,12 @@ export default function App() {
             ></YAxis>
             <Tooltip
               content={<CustomizedTooltip></CustomizedTooltip>}
+              wrapperClassName={tooltipWrapperClassName}
+              payloadModifier={tooltipPayloadModifier}
               formatter={valueFormatter}
-              wrapperClassName="shadow"
               active={isTooltipActive}
+              cursor={false}
+              // labelClassName="small"
             ></Tooltip>
             <Legend
               {...legendMouseHandlers}
@@ -178,10 +170,10 @@ export default function App() {
                 key={index}
               ></Line>
             ))}
-            {dotsSorted.map((dot, index) => (
+            {referenceDotsSorted.map((dot, index) => (
               <ReferenceDot
                 {...{ ...dot, ...dotMouseHandlers }}
-                style={styleDot(dot)}
+                style={styleReferenceDot(dot)}
                 key={index}
               ></ReferenceDot>
             ))}
@@ -191,6 +183,48 @@ export default function App() {
     </Main>
   );
 }
+
+const getPayloadModifier =
+  ({ changeFromLastYear, lineName }) =>
+  (payload) => {
+    const where = ({ name }) => name === lineName;
+
+    const onlyDot = payload
+      .filter(where)
+      .map(({ color, ...rest }) => ({ ...rest }));
+
+    const statement = isNumeric(changeFromLastYear)
+      ? `${changeFromLastYear < 0 ? "-" : "+"}${Math.abs(
+          changeFromLastYear
+        )} from previous year`
+      : "";
+
+    if (statement.length > 0) {
+      return [
+        ...onlyDot,
+        {
+          color:
+            changeFromLastYear === 0
+              ? null
+              : changeFromLastYear < 0
+              ? "red"
+              : "green",
+          name: statement,
+        },
+      ];
+    }
+
+    return onlyDot;
+  };
+
+const getWrapperClassName = (changeFromLastYear) =>
+  `shadow-lg bg-${
+    !isNumeric(changeFromLastYear) || changeFromLastYear === 0
+      ? "secondary"
+      : changeFromLastYear < 0
+      ? "danger"
+      : "success"
+  }-subtle`;
 
 const {
   pivotDefs: { pivotOn: xAxisDataKey },
