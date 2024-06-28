@@ -4,7 +4,7 @@ import { getFullClassName } from "../helpers/getFullClassName";
 export const CustomizedTooltip = (props) => {
   const {
     wrapperClassName = "",
-    payloadModifier,
+    payloadManipulator,
     labelClassName,
     formatter,
     separator,
@@ -14,14 +14,16 @@ export const CustomizedTooltip = (props) => {
 
   const items = payload.map((item) => ({ ...item, separator }));
 
-  const relevantItems =
-    typeof payloadModifier === "function" ? payloadModifier(items) : items;
+  const manipulatedPayload =
+    typeof payloadManipulator === "function"
+      ? payloadManipulator(items)
+      : items;
 
   return (
     <DefaultTooltip className={wrapperClassName}>
       <TooltipLabel className={labelClassName}>{label}</TooltipLabel>
       <TooltipItemList>
-        {relevantItems.map(({ value, name, ...rest }, index) => {
+        {manipulatedPayload.map(({ value, name, ...rest }, index) => {
           const [formattedValue, formattedName] = getResultOfFormatter({
             formatter,
             value,

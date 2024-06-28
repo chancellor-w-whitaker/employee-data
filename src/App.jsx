@@ -12,8 +12,11 @@ import Calendar from "react-calendar";
 import { useMemo } from "react";
 
 import { sortReferenceDotsByHistory } from "./helpers/sortReferenceDotsByHistory";
+import { getChangeFromPreviousPoint } from "./helpers/getChangeFromPreviousPoint";
 import { useIsLineAnimationActive } from "./hooks/useIsLineAnimationActive";
+import { getPayloadManipulator } from "./helpers/getPayloadManipulator";
 import { useActiveReferenceDot } from "./hooks/useActiveReferenceDot";
+import { getWrapperClassName } from "./helpers/getWrapperClassName";
 import { CustomizedTooltip } from "./components/CustomizedTooltip";
 import { useActiveLegendItem } from "./hooks/useActiveLegendItem";
 import { CustomizedLegend } from "./components/CustomizedLegend";
@@ -21,7 +24,6 @@ import { getReferenceDots } from "./helpers/getReferenceDots";
 import { useIsPopoverOpen } from "./hooks/useIsPopoverOpen";
 import { getDotLine } from "./helpers/getDotLine";
 import { useFileList } from "./hooks/useFileList";
-import { isNumeric } from "./helpers/isNumeric";
 import { Popover } from "./components/Popover";
 import { Content } from "./components/Content";
 import { Button } from "./components/Button";
@@ -65,33 +67,18 @@ export default function App() {
     ...dotMouseHandlers
   } = useActiveReferenceDot({ activeLegendItem, referenceDots });
 
-  const lineOfActiveDot = activeReferenceDot
+  const activeDotLine = activeReferenceDot
     ? getDotLine(activeReferenceDot)
     : null;
 
-  const indexOfActiveDotX = activeReferenceDot
-    ? data.findIndex(
-        ({ [xAxisDataKey]: xValue }) => xValue === activeReferenceDot.x
-      )
-    : -1;
+  const change = getChangeFromPreviousPoint({
+    point: activeReferenceDot,
+    data,
+  });
 
-  const priorDataElement =
-    indexOfActiveDotX > 0 ? data[indexOfActiveDotX - 1] : null;
-
-  const priorYValue = priorDataElement
-    ? priorDataElement[lineOfActiveDot]
-    : null;
-
-  const currentYValue = activeReferenceDot ? activeReferenceDot.y : null;
-
-  const change =
-    isNumeric(currentYValue) && isNumeric(priorYValue)
-      ? currentYValue - priorYValue
-      : null;
-
-  const tooltipPayloadModifier = getPayloadModifier({
-    changeFromLastYear: change,
-    lineName: lineOfActiveDot,
+  const payloadManipulator = getPayloadManipulator({
+    changeFromPreviousPoint: change,
+    lineName: activeDotLine,
   });
 
   const tooltipWrapperClassName = getWrapperClassName(change);
@@ -149,11 +136,10 @@ export default function App() {
             <Tooltip
               content={<CustomizedTooltip></CustomizedTooltip>}
               wrapperClassName={tooltipWrapperClassName}
-              payloadModifier={tooltipPayloadModifier}
+              payloadManipulator={payloadManipulator}
               formatter={valueFormatter}
               active={isTooltipActive}
               cursor={false}
-              // labelClassName="small"
             ></Tooltip>
             <Legend
               {...legendMouseHandlers}
@@ -183,48 +169,6 @@ export default function App() {
     </Main>
   );
 }
-
-const getPayloadModifier =
-  ({ changeFromLastYear, lineName }) =>
-  (payload) => {
-    const where = ({ name }) => name === lineName;
-
-    const onlyDot = payload
-      .filter(where)
-      .map(({ color, ...rest }) => ({ ...rest }));
-
-    const statement = isNumeric(changeFromLastYear)
-      ? `${changeFromLastYear < 0 ? "-" : "+"}${Math.abs(
-          changeFromLastYear
-        )} from previous year`
-      : "";
-
-    if (statement.length > 0) {
-      return [
-        ...onlyDot,
-        {
-          color:
-            changeFromLastYear === 0
-              ? null
-              : changeFromLastYear < 0
-              ? "red"
-              : "green",
-          name: statement,
-        },
-      ];
-    }
-
-    return onlyDot;
-  };
-
-const getWrapperClassName = (changeFromLastYear) =>
-  `shadow-lg bg-${
-    !isNumeric(changeFromLastYear) || changeFromLastYear === 0
-      ? "secondary"
-      : changeFromLastYear < 0
-      ? "danger"
-      : "success"
-  }-subtle`;
 
 const {
   pivotDefs: { pivotOn: xAxisDataKey },
