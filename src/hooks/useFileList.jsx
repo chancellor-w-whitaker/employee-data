@@ -33,6 +33,8 @@ export const useFileList = (promise) => {
     [dataArrays, dataFiles]
   );
 
+  console.log(aggregableData);
+
   const { lines, data } = useMemo(
     () => getChartProperties(aggregableData),
     [aggregableData]
@@ -47,7 +49,5 @@ export const useFileList = (promise) => {
 
   const calendarProps = { onChange: setDate, tileDisabled, value: date };
 
-  const localeDateString = date.toLocaleDateString();
-
-  return { localeDateString, lines, data, ...calendarProps };
+  return { lines, data, ...calendarProps };
 };

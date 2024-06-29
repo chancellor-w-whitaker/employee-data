@@ -8,7 +8,6 @@ import {
   YAxis,
   Line,
 } from "recharts";
-import Calendar from "react-calendar";
 import { useMemo } from "react";
 
 import { sortReferenceDotsByHistory } from "./helpers/sortReferenceDotsByHistory";
@@ -21,20 +20,15 @@ import { CustomizedTooltip } from "./components/CustomizedTooltip";
 import { useActiveLegendItem } from "./hooks/useActiveLegendItem";
 import { CustomizedLegend } from "./components/CustomizedLegend";
 import { getReferenceDots } from "./helpers/getReferenceDots";
-import { useIsPopoverOpen } from "./hooks/useIsPopoverOpen";
+import { DatePicker } from "./components/DatePicker";
 import { getDotLine } from "./helpers/getDotLine";
 import { useFileList } from "./hooks/useFileList";
-import { Popover } from "./components/Popover";
 import { Content } from "./components/Content";
-import { Button } from "./components/Button";
 import { Main } from "./components/Main";
 import { constants } from "./constants";
 
 export default function App() {
-  const { localeDateString, lines, data, ...calendarProps } =
-    useFileList(fileListPromise);
-
-  const { isPopoverOpen, ...toggleHandlers } = useIsPopoverOpen();
+  const { lines, data, ...calendarProps } = useFileList(fileListPromise);
 
   const {
     activeLegendItemHistory,
@@ -103,20 +97,7 @@ export default function App() {
         <h1 className="display-6 mb-0">Faculty/Staff Employee Data</h1>
       </Content>
       <Content>
-        <div className="d-flex gap-3">
-          <Popover
-            {...toggleHandlers}
-            openWith={
-              <Button className="bg-gradient shadow-sm" active={isPopoverOpen}>
-                <i className="bi bi-calendar"></i>
-              </Button>
-            }
-            hide={
-              <Calendar className="shadow-lg" {...calendarProps}></Calendar>
-            }
-          ></Popover>
-          <div className="fs-4">{localeDateString}</div>
-        </div>
+        <DatePicker {...calendarProps}></DatePicker>
       </Content>
       <Content>
         <ResponsiveContainer height={400}>
