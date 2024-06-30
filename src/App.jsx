@@ -24,11 +24,12 @@ import { DatePicker } from "./components/DatePicker";
 import { getDotLine } from "./helpers/getDotLine";
 import { useFileList } from "./hooks/useFileList";
 import { Content } from "./components/Content";
+import { Button } from "./components/Button";
 import { Main } from "./components/Main";
 import { constants } from "./constants";
 
 export default function App() {
-  const { lines, data, ...calendarProps } = useFileList(fileListPromise);
+  const { lists, lines, data, ...calendarProps } = useFileList(fileListPromise);
 
   const {
     activeLegendItemHistory,
@@ -99,6 +100,11 @@ export default function App() {
       <Content>
         <DatePicker {...calendarProps}></DatePicker>
       </Content>
+      {/* <Content>
+        {lists.map(({ selections, options, name }) => {
+          return <Button key={name}>{name}</Button>;
+        })}
+      </Content> */}
       <Content>
         <ResponsiveContainer height={400}>
           <LineChart data={data}>

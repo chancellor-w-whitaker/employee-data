@@ -37,3 +37,38 @@ export const constants = {
   xAxisPadding: { right: 30, left: 30 },
   linePropsLookup,
 };
+
+const columnDefs = [
+  {
+    headerName: "Job Type",
+    field: "JOB_TYPE",
+  },
+  {
+    field: "JOB_ECLS_GROUP",
+    headerName: "Job Group",
+  },
+  {
+    headerName: "Full/Part-time",
+    field: "JOB_ECLS_FT_PT",
+  },
+  {
+    field: "PEAFACT_RANK_DESC",
+    headerName: "Faculty Rank",
+  },
+  {
+    field: "TENURE_DESC",
+    headerName: "Tenure",
+  },
+  {
+    headerName: "Gender",
+    field: "GENDER",
+  },
+  {
+    field: "computed_race",
+    headerName: "Race",
+  },
+  {
+    headerName: "Telework",
+    field: "telework",
+  },
+];

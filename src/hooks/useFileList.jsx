@@ -33,7 +33,31 @@ export const useFileList = (promise) => {
     [dataArrays, dataFiles]
   );
 
-  console.log(aggregableData);
+  // const lists = useMemo(() => {
+  //   const sets = {};
+
+  //   aggregableData.forEach((row) => {
+  //     Object.keys(row).forEach((key) => {
+  //       const value = row[key];
+
+  //       if (!(key in sets)) sets[key] = new Set();
+
+  //       sets[key].add(value);
+  //     });
+  //   });
+
+  //   const arrays = Object.fromEntries(
+  //     Object.entries(sets).map(([key, set]) => [key, [...set].sort()])
+  //   );
+
+  //   const lists = Object.keys(arrays).map((name) => ({
+  //     selections: sets[name],
+  //     options: arrays[name],
+  //     name,
+  //   }));
+
+  //   return lists;
+  // }, [aggregableData]);
 
   const { lines, data } = useMemo(
     () => getChartProperties(aggregableData),
