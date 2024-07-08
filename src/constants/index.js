@@ -22,22 +22,6 @@ const linePropsLookup = Object.fromEntries(
   ])
 );
 
-export const constants = {
-  pivotDefs: {
-    groupBy: ["JOB_ECLS_FT_PT", "JOB_TYPE"],
-    sumUp: ["total"],
-    pivotOn: "date",
-  },
-  dropShadowStyle: {
-    filter: "drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5))",
-  },
-  xAxisTickFormatter: (dateString) => new Date(dateString).getFullYear(),
-  valueFormatter: (value) => value.toLocaleString(),
-  fileListPromise: csv("Data/_fileList.csv"),
-  xAxisPadding: { right: 30, left: 30 },
-  linePropsLookup,
-};
-
 const columnDefs = [
   {
     headerName: "Job Type",
@@ -72,3 +56,20 @@ const columnDefs = [
     field: "telework",
   },
 ];
+
+export const constants = {
+  pivotDefs: {
+    groupBy: ["JOB_ECLS_FT_PT", "JOB_TYPE"],
+    sumUp: ["total"],
+    pivotOn: "date",
+  },
+  dropShadowStyle: {
+    filter: "drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5))",
+  },
+  xAxisTickFormatter: (dateString) => new Date(dateString).getFullYear(),
+  valueFormatter: (value) => value.toLocaleString(),
+  fileListPromise: csv("Data/_fileList.csv"),
+  xAxisPadding: { right: 30, left: 30 },
+  linePropsLookup,
+  columnDefs,
+};

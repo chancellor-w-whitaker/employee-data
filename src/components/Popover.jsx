@@ -1,10 +1,17 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 
-export const Popover = ({ openWith, onClose, onOpen, hide }) => {
+export const Popover = ({
+  openWith,
+  onClose,
+  onOpen,
+  style,
+  hide,
+  ...props
+}) => {
   const { popover, isOpen, open } = usePopover({ onClose, onOpen });
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", ...style }} {...props}>
       <div onClickCapture={open}>{openWith}</div>
       {isOpen && (
         <div style={{ position: "absolute", zIndex: 1000 }} ref={popover}>

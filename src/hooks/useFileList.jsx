@@ -8,6 +8,12 @@ import { getDefaultDate } from "../helpers/getDefaultDate";
 import { useResettableState } from "./useResettableState";
 import { getDataFiles } from "../helpers/getDataFiles";
 import { usePromise } from "./usePromise";
+import { constants } from "../constants";
+
+const {
+  pivotDefs: { pivotOn, sumUp },
+  columnDefs,
+} = constants;
 
 export const useFileList = (promise) => {
   const fileList = usePromise(promise);
@@ -33,31 +39,37 @@ export const useFileList = (promise) => {
     [dataArrays, dataFiles]
   );
 
-  // const lists = useMemo(() => {
-  //   const sets = {};
+  const columns = useMemo(() => {
+    const sets = {};
 
-  //   aggregableData.forEach((row) => {
-  //     Object.keys(row).forEach((key) => {
-  //       const value = row[key];
+    aggregableData.forEach((row) => {
+      Object.keys(row).forEach((key) => {
+        const value = row[key];
 
-  //       if (!(key in sets)) sets[key] = new Set();
+        if (!(key in sets)) sets[key] = new Set();
 
-  //       sets[key].add(value);
-  //     });
-  //   });
+        sets[key].add(value);
+      });
+    });
 
-  //   const arrays = Object.fromEntries(
-  //     Object.entries(sets).map(([key, set]) => [key, [...set].sort()])
-  //   );
+    const arrays = Object.fromEntries(
+      Object.entries(sets).map(([key, set]) => [key, [...set].sort()])
+    );
 
-  //   const lists = Object.keys(arrays).map((name) => ({
-  //     selections: sets[name],
-  //     options: arrays[name],
-  //     name,
-  //   }));
+    const headerNameLookup = Object.fromEntries(
+      columnDefs.map(({ headerName, field }) => [field, headerName])
+    );
 
-  //   return lists;
-  // }, [aggregableData]);
+    const columns = Object.keys(arrays)
+      .map((field) => ({
+        headerName: field in headerNameLookup ? headerNameLookup[field] : field,
+        values: arrays[field],
+        field,
+      }))
+      .filter(({ field }) => !sumUp.includes(field) && field !== pivotOn);
+
+    return columns;
+  }, [aggregableData]);
 
   const { lines, data } = useMemo(
     () => getChartProperties(aggregableData),
@@ -73,5 +85,5 @@ export const useFileList = (promise) => {
 
   const calendarProps = { onChange: setDate, tileDisabled, value: date };
 
-  return { lines, data, ...calendarProps };
+  return { columns, lines, data, ...calendarProps };
 };
