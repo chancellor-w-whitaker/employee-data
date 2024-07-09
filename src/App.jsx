@@ -30,9 +30,84 @@ import { Button } from "./components/Button";
 import { Main } from "./components/Main";
 import { constants } from "./constants";
 
+const ItemCheckbox = ({ type = "checkbox", className = "", ...rest }) => {
+  const defaultClassName = "form-check-input flex-shrink-0";
+
+  const entireClassName = [defaultClassName, className].join(
+    className.length > 0 ? " " : ""
+  );
+
+  return <input className={entireClassName} type={type} {...rest} />;
+};
+
+const ListGroupItem = ({ className = "", ...rest }) => {
+  const defaultClassName = "list-group-item d-flex gap-2";
+
+  const entireClassName = [defaultClassName, className].join(
+    className.length > 0 ? " " : ""
+  );
+
+  return <label className={entireClassName} {...rest}></label>;
+};
+
+const ListGroup = ({ className = "", style, ...rest }) => {
+  const defaultClassName = "list-group list-group-flush overflow-y-scroll";
+
+  const entireClassName = [defaultClassName, className].join(
+    className.length > 0 ? " " : ""
+  );
+
+  return (
+    <div
+      style={{ maxHeight: 200, ...style }}
+      className={entireClassName}
+      {...rest}
+    ></div>
+  );
+};
+
+const DropdownSearch = () => {
+  return (
+    <form className="p-2 mb-2 bg-body-tertiary border-bottom">
+      <input
+        placeholder="Type to filter..."
+        className="form-control"
+        autoComplete="false"
+        type="search"
+      />
+    </form>
+  );
+};
+
+const DropdownMenu = ({ children }) => {
+  return (
+    <div className="dropdown-menu d-block position-static pt-0 mx-0 rounded-3 shadow overflow-hidden w-280px">
+      <DropdownSearch></DropdownSearch>
+      {children}
+    </div>
+  );
+};
+
+const PopoverButton = ({ children }) => {
+  return (
+    <Button
+      className="dropdown-toggle w-100 shadow-sm bg-gradient d-flex align-items-center justify-content-center"
+      variant="secondary"
+    >
+      {children}
+    </Button>
+  );
+};
+
 export default function App() {
-  const { columns, lines, data, ...calendarProps } =
-    useFileList(fileListPromise);
+  const {
+    handleCheckboxChange,
+    isChecked,
+    columns,
+    lines,
+    data,
+    ...calendarProps
+  } = useFileList(fileListPromise);
 
   const {
     activeLegendItemHistory,
@@ -113,7 +188,7 @@ export default function App() {
             className="d-flex flex-wrap justify-content-evenly"
             style={{ marginBottom: -8, marginRight: -8 }}
           >
-            {columns.map(({ headerName, values, field }) => {
+            {columns.map(({ field: name, headerName, values }) => {
               const rowColumns = getBestRowColumns({
                 count: columns.length,
                 width: resizeWidth,
@@ -121,44 +196,39 @@ export default function App() {
 
               return (
                 <Popover
-                  hide={
-                    <ul
-                      className="dropdown-menu d-block shadow overflow-y-scroll"
-                      style={{ maxHeight: 250 }}
-                    >
-                      {values.map((value) => (
-                        <li key={value}>
-                          <button className="dropdown-item" type="button">
-                            {value}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                  openUp={
+                    <DropdownMenu>
+                      <ListGroup>
+                        {values.map((value) => (
+                          <ListGroupItem key={value}>
+                            <ItemCheckbox
+                              checked={isChecked({ value, name })}
+                              onChange={handleCheckboxChange}
+                              value={value}
+                              name={name}
+                            ></ItemCheckbox>
+                            <span>{value}</span>
+                          </ListGroupItem>
+                        ))}
+                      </ListGroup>
+                    </DropdownMenu>
                   }
                   openWith={
-                    <Button
-                      className="dropdown-toggle w-100 shadow-sm bg-gradient d-flex align-items-center justify-content-center"
-                      variant="secondary"
-                    >
+                    <PopoverButton>
                       <div className="text-truncate">{headerName}</div>
-                    </Button>
+                    </PopoverButton>
                   }
                   style={{
                     width: `${Math.floor(100 / rowColumns)}%`,
                   }}
                   className="dropdown flex-fill pe-2 pb-2"
-                  key={field}
+                  key={name}
                 ></Popover>
               );
             })}
           </div>
         </ResponsiveContainer>
       </Content>
-      {/* <Content>
-        {lists.map(({ selections, options, name }) => {
-          return <Button key={name}>{name}</Button>;
-        })}
-      </Content> */}
       <Content>
         <ResponsiveContainer height={400}>
           <LineChart data={data}>

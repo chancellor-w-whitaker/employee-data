@@ -20,7 +20,7 @@ export const DatePicker = ({ className = "shadow-lg", value, ...props }) => {
           <div className="font-monospace">{getDatePickerLabel(value)}</div>
         </Button>
       }
-      hide={
+      openUp={
         <Calendar className={className} value={value} {...props}></Calendar>
       }
     ></Popover>

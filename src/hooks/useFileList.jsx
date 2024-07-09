@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useState, useMemo } from "react";
 
 import { getDataArraysPromise } from "../helpers/getDataArraysPromise";
 import { makeDataAggregable } from "../helpers/makeDataAggregable";
@@ -7,6 +7,7 @@ import { getChartProperties } from "../helpers/getChartProperties";
 import { getDefaultDate } from "../helpers/getDefaultDate";
 import { useResettableState } from "./useResettableState";
 import { getDataFiles } from "../helpers/getDataFiles";
+import { usePreviousState } from "./usePreviousState";
 import { usePromise } from "./usePromise";
 import { constants } from "../constants";
 
@@ -71,9 +72,52 @@ export const useFileList = (promise) => {
     return columns;
   }, [aggregableData]);
 
+  const [dropdownChanges, setDropdownChanges] = useState([]);
+
+  const handleCheckboxChange = useCallback(
+    ({ target: { checked, value, name } }) =>
+      setDropdownChanges((previousArray) => [
+        ...previousArray,
+        { checked, value, name },
+      ]),
+    []
+  );
+
+  const deselectedValues = useMemo(() => {
+    const sets = {};
+
+    dropdownChanges.forEach(({ checked, value, name }) => {
+      if (!(name in sets)) sets[name] = new Set();
+
+      checked ? sets[name].delete(value) : sets[name].add(value);
+    });
+
+    return sets;
+  }, [dropdownChanges]);
+
+  const isChecked = useCallback(
+    ({ value, name }) =>
+      !(name in deselectedValues && deselectedValues[name].has(value)),
+    [deselectedValues]
+  );
+
+  const filteredData = useMemo(
+    () =>
+      aggregableData.filter((row) => {
+        for (let name of Object.keys(row)) {
+          const value = row[name];
+
+          if (!isChecked({ value, name })) return false;
+        }
+
+        return true;
+      }),
+    [aggregableData, isChecked]
+  );
+
   const { lines, data } = useMemo(
-    () => getChartProperties(aggregableData),
-    [aggregableData]
+    () => getChartProperties(filteredData),
+    [filteredData]
   );
 
   const validDatesSet = useMemo(() => getSetOfValidDates(fileList), [fileList]);
@@ -85,5 +129,12 @@ export const useFileList = (promise) => {
 
   const calendarProps = { onChange: setDate, tileDisabled, value: date };
 
-  return { columns, lines, data, ...calendarProps };
+  return {
+    handleCheckboxChange,
+    isChecked,
+    columns,
+    lines,
+    data,
+    ...calendarProps,
+  };
 };

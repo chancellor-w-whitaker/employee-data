@@ -16,3 +16,11 @@
     0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
   --bs-font-monospace: "Droid Sans Mono", sans-serif;
 }
+
+body {
+  overflow-y: scroll;
+}
+
+.w-280px {
+  width: 280px;
+}
