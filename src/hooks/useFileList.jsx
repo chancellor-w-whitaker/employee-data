@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 
 import { filterDataByCheckboxes } from "../helpers/filterDataByCheckboxes";
 import { getDataArraysPromise } from "../helpers/getDataArraysPromise";
@@ -50,6 +50,8 @@ export const useFileList = (promise) => {
   const columns = useMemo(() => getColumns(aggregableData), [aggregableData]);
 
   const [dropdownChanges, setDropdownChanges] = useState([]);
+
+  // useEffect(() => console.log(dropdownChanges), [dropdownChanges]);
 
   const handleCheckboxChange = useCallback(
     ({ target: { className, checked, value, name } }) => {

@@ -32,7 +32,6 @@ import { useFileList } from "./hooks/useFileList";
 import { Content } from "./components/Content";
 import { Popover } from "./components/Popover";
 import { Button } from "./components/Button";
-import { Main } from "./components/Main";
 import { constants } from "./constants";
 
 export default function App() {
@@ -96,10 +95,15 @@ export default function App() {
 
   const onResize = (w) => setResizeWidth(w);
 
+  const noDataToShow = data.length === 0;
+
   return (
-    <Main>
+    // <Main>
+    <div className="d-flex gap-4 flex-column">
       <Content>
-        <h1 className="display-6 mb-0">Faculty/Staff Employee Data</h1>
+        <h1 className="display-5 mb-0 text-center">
+          Faculty/Staff Employee Data
+        </h1>
       </Content>
       <Content>
         <DatePicker {...calendarProps}></DatePicker>
@@ -166,53 +170,61 @@ export default function App() {
       </Content>
       <Content>
         <ResponsiveContainer height={400}>
-          <LineChart data={data}>
-            <XAxis
-              tickFormatter={xAxisTickFormatter}
-              padding={xAxisPadding}
-              dataKey={xAxisDataKey}
-              tickLine={false}
-            ></XAxis>
-            <YAxis
-              tickFormatter={valueFormatter}
-              axisLine={false}
-              tickLine={false}
-              tickCount={6}
-            ></YAxis>
-            <Tooltip
-              content={<CustomizedTooltip></CustomizedTooltip>}
-              wrapperClassName={tooltipWrapperClassName}
-              payloadManipulator={payloadManipulator}
-              formatter={valueFormatter}
-              active={isTooltipActive}
-              cursor={false}
-            ></Tooltip>
-            <Legend
-              {...legendMouseHandlers}
-              content={<CustomizedLegend></CustomizedLegend>}
-              verticalAlign="top"
-              layout="vertical"
-              align="right"
-              iconSize={16}
-            ></Legend>
-            {lines.map((line, index) => (
-              <Line
-                {...{ ...line, ...lineAnimationHandlers }}
-                style={styleLine(line)}
-                key={index}
-              ></Line>
-            ))}
-            {referenceDotsSorted.map((dot, index) => (
-              <ReferenceDot
-                {...{ ...dot, ...dotMouseHandlers }}
-                style={styleReferenceDot(dot)}
-                key={index}
-              ></ReferenceDot>
-            ))}
-          </LineChart>
+          {noDataToShow ? (
+            <div className="h-100 d-flex justify-content-center align-items-center">
+              No Data To Show
+            </div>
+          ) : (
+            <LineChart data={data}>
+              <XAxis
+                tickFormatter={xAxisTickFormatter}
+                padding={xAxisPadding}
+                dataKey={xAxisDataKey}
+                tickLine={false}
+              ></XAxis>
+              <YAxis
+                tickFormatter={valueFormatter}
+                axisLine={false}
+                tickLine={false}
+                tickCount={6}
+              ></YAxis>
+              <Tooltip
+                content={<CustomizedTooltip></CustomizedTooltip>}
+                wrapperClassName={tooltipWrapperClassName}
+                payloadManipulator={payloadManipulator}
+                formatter={valueFormatter}
+                active={isTooltipActive}
+                cursor={false}
+              ></Tooltip>
+              <Legend
+                {...legendMouseHandlers}
+                content={<CustomizedLegend></CustomizedLegend>}
+                verticalAlign="top"
+                layout="vertical"
+                align="right"
+                iconSize={16}
+              ></Legend>
+              {lines.map((line, index) => (
+                <Line
+                  {...{ ...line, ...lineAnimationHandlers }}
+                  style={styleLine(line)}
+                  key={index}
+                ></Line>
+              ))}
+              {referenceDotsSorted.map((dot, index) => (
+                <ReferenceDot
+                  {...{ ...dot, ...dotMouseHandlers }}
+                  style={styleReferenceDot(dot)}
+                  key={index}
+                ></ReferenceDot>
+              ))}
+            </LineChart>
+          )}
         </ResponsiveContainer>
       </Content>
-    </Main>
+    </div>
+
+    // </Main>
   );
 }
 

@@ -2,13 +2,13 @@ import { getEntireClassName } from "../helpers/getEntireClassName";
 
 export const DropdownMenu = ({ className, children }) => {
   const entireClassName = getEntireClassName(
-    "dropdown-menu d-block position-static pt-0 mx-0 rounded-3 shadow overflow-hidden w-280px",
+    "dropdown-menu d-block position-static mx-0 rounded-3 shadow overflow-hidden w-280px",
     className
   );
 
   return (
     <div className={entireClassName}>
-      <Search></Search>
+      {/* <Search></Search> */}
       {children}
     </div>
   );

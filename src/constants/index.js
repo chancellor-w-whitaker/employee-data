@@ -1,5 +1,9 @@
 import { csv } from "d3-fetch";
 
+export const base = "";
+
+const fileListUrl = base + "Data/_fileList.csv";
+
 const expectedGroups = {
   "Part-time Faculty": { color: "orange" },
   "Part-time Student": { color: "purple" },
@@ -68,8 +72,8 @@ export const constants = {
   },
   xAxisTickFormatter: (dateString) => new Date(dateString).getFullYear(),
   valueFormatter: (value) => value.toLocaleString(),
-  fileListPromise: csv("Data/_fileList.csv"),
   xAxisPadding: { right: 30, left: 30 },
+  fileListPromise: csv(fileListUrl),
   linePropsLookup,
   columnDefs,
 };

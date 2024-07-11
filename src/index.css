@@ -24,3 +24,23 @@ body {
 .w-280px {
   width: 280px;
 }
+
+.page > div {
+  margin: 0 !important;
+}
+
+.page.offset-xxl-1 {
+  margin-left: 0;
+}
+
+.page.col-xxl-10 {
+  width: 100%;
+}
+
+.page {
+  padding: 1.5rem !important;
+}
+
+.offcanvas {
+  display: none !important;
+}
