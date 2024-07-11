@@ -1,5 +1,6 @@
 import { useCallback, useState, useMemo } from "react";
 
+import { filterDataByCheckboxes } from "../helpers/filterDataByCheckboxes";
 import { getDataArraysPromise } from "../helpers/getDataArraysPromise";
 import { makeDataAggregable } from "../helpers/makeDataAggregable";
 import { getSetOfValidDates } from "../helpers/getSetOfValidDates";
@@ -7,21 +8,27 @@ import { getChartProperties } from "../helpers/getChartProperties";
 import { getDefaultDate } from "../helpers/getDefaultDate";
 import { useResettableState } from "./useResettableState";
 import { getDataFiles } from "../helpers/getDataFiles";
-import { usePreviousState } from "./usePreviousState";
+import { shallowEqual } from "../helpers/shallowEqual";
+import { getColumns } from "../helpers/getColumns";
 import { usePromise } from "./usePromise";
-import { constants } from "../constants";
-
-const {
-  pivotDefs: { pivotOn, sumUp },
-  columnDefs,
-} = constants;
 
 export const useFileList = (promise) => {
   const fileList = usePromise(promise);
 
+  const validDatesSet = useMemo(() => getSetOfValidDates(fileList), [fileList]);
+
+  const tileDisabled = useCallback(
+    ({ date }) => !validDatesSet.has(date.toLocaleDateString()),
+    [validDatesSet]
+  );
+
   const defaultDate = useMemo(() => getDefaultDate(fileList), [fileList]);
 
   const [date, setDate] = useResettableState(defaultDate);
+
+  const [value, onChange] = [date, setDate];
+
+  const calendarProps = { tileDisabled, onChange, value };
 
   const dataFiles = useMemo(
     () => getDataFiles({ fileList, date }),
@@ -40,78 +47,99 @@ export const useFileList = (promise) => {
     [dataArrays, dataFiles]
   );
 
-  const columns = useMemo(() => {
-    const sets = {};
-
-    aggregableData.forEach((row) => {
-      Object.keys(row).forEach((key) => {
-        const value = row[key];
-
-        if (!(key in sets)) sets[key] = new Set();
-
-        sets[key].add(value);
-      });
-    });
-
-    const arrays = Object.fromEntries(
-      Object.entries(sets).map(([key, set]) => [key, [...set].sort()])
-    );
-
-    const headerNameLookup = Object.fromEntries(
-      columnDefs.map(({ headerName, field }) => [field, headerName])
-    );
-
-    const columns = Object.keys(arrays)
-      .map((field) => ({
-        headerName: field in headerNameLookup ? headerNameLookup[field] : field,
-        values: arrays[field],
-        field,
-      }))
-      .filter(({ field }) => !sumUp.includes(field) && field !== pivotOn);
-
-    return columns;
-  }, [aggregableData]);
+  const columns = useMemo(() => getColumns(aggregableData), [aggregableData]);
 
   const [dropdownChanges, setDropdownChanges] = useState([]);
 
   const handleCheckboxChange = useCallback(
-    ({ target: { checked, value, name } }) =>
-      setDropdownChanges((previousArray) => [
-        ...previousArray,
-        { checked, value, name },
-      ]),
+    ({ target: { className, checked, value, name } }) => {
+      // uses className to identify whether an "All" checkbox was clicked
+      const clickedAllCheckbox = className.split(" ").includes("all-checkbox");
+
+      // element to be appended to state
+      // if clickAllCheckbox, value is null (value representing "All")
+      const nextElement = {
+        value: clickedAllCheckbox ? null : value,
+        checked,
+        name,
+      };
+
+      // if clickedAllCheckbox, delete entire history of that dropdown
+      // else, only delete history of clicked name + value pair
+      // so, history not overwritten is kept, and "All" buttons better reflect user intent
+      const filterCallbackFn = clickedAllCheckbox
+        ? ({ name: elementName }) => elementName !== name
+        : ({ checked, ...pair }) => !shallowEqual(pair, { value, name });
+
+      const setStateCallbackFn = (previousState) => [
+        ...previousState.filter(filterCallbackFn),
+        nextElement,
+      ];
+
+      setDropdownChanges(setStateCallbackFn);
+    },
     []
   );
 
-  const deselectedValues = useMemo(() => {
-    const sets = {};
+  const dropdownState = useMemo(() => {
+    const state = {};
 
     dropdownChanges.forEach(({ checked, value, name }) => {
-      if (!(name in sets)) sets[name] = new Set();
+      // dropdown not been discovered yet
+      if (!(name in state)) {
+        // initialize state of discovered dropdown
+        state[name] = {
+          except: { unchecked: new Set(), checked: new Set() },
+          all: true,
+        };
+      }
 
-      checked ? sets[name].delete(value) : sets[name].add(value);
+      const dropdown = state[name];
+
+      const exceptions = dropdown.except;
+
+      // if click all checkbox
+      if (value === null) {
+        // record
+        dropdown.all = checked;
+      } else {
+        if (checked) {
+          exceptions.checked.add(value);
+        } else {
+          exceptions.unchecked.add(value);
+        }
+      }
     });
 
-    return sets;
+    return state;
   }, [dropdownChanges]);
 
   const isChecked = useCallback(
-    ({ value, name }) =>
-      !(name in deselectedValues && deselectedValues[name].has(value)),
-    [deselectedValues]
+    ({ value, name }) => {
+      const dropdownHasNeverChanged = !(name in dropdownState);
+
+      // if dropdown has never changed, checkbox must be checked
+      if (dropdownHasNeverChanged) return true;
+
+      const {
+        except: { unchecked, checked },
+        all,
+      } = dropdownState[name];
+
+      const exceptions = all ? unchecked : checked;
+
+      // clicked all checkbox
+      if (value === undefined) return all && exceptions.size === 0;
+
+      if (exceptions.has(value)) return !all;
+
+      return all;
+    },
+    [dropdownState]
   );
 
   const filteredData = useMemo(
-    () =>
-      aggregableData.filter((row) => {
-        for (let name of Object.keys(row)) {
-          const value = row[name];
-
-          if (!isChecked({ value, name })) return false;
-        }
-
-        return true;
-      }),
+    () => filterDataByCheckboxes({ data: aggregableData, isChecked }),
     [aggregableData, isChecked]
   );
 
@@ -120,19 +148,10 @@ export const useFileList = (promise) => {
     [filteredData]
   );
 
-  const validDatesSet = useMemo(() => getSetOfValidDates(fileList), [fileList]);
-
-  const tileDisabled = useCallback(
-    ({ date }) => !validDatesSet.has(date.toLocaleDateString()),
-    [validDatesSet]
-  );
-
-  const calendarProps = { onChange: setDate, tileDisabled, value: date };
-
   return {
+    columns: Object.values(columns),
     handleCheckboxChange,
     isChecked,
-    columns,
     lines,
     data,
     ...calendarProps,

@@ -12,16 +12,21 @@ import { useState, useMemo } from "react";
 
 import { sortReferenceDotsByHistory } from "./helpers/sortReferenceDotsByHistory";
 import { getChangeFromPreviousPoint } from "./helpers/getChangeFromPreviousPoint";
+import { getNumberOfColumnsPerRow } from "./helpers/getNumberOfColumnsPerRow";
 import { useIsLineAnimationActive } from "./hooks/useIsLineAnimationActive";
 import { getPayloadManipulator } from "./helpers/getPayloadManipulator";
 import { useActiveReferenceDot } from "./hooks/useActiveReferenceDot";
 import { getWrapperClassName } from "./helpers/getWrapperClassName";
 import { CustomizedTooltip } from "./components/CustomizedTooltip";
 import { useActiveLegendItem } from "./hooks/useActiveLegendItem";
+import { getEntireClassName } from "./helpers/getEntireClassName";
 import { CustomizedLegend } from "./components/CustomizedLegend";
-import { getBestRowColumns } from "./helpers/getBestRowColumns";
 import { getReferenceDots } from "./helpers/getReferenceDots";
+import { Checkbox } from "./components/ListGroup/Checkbox";
+import { DropdownMenu } from "./components/DropdownMenu";
 import { DatePicker } from "./components/DatePicker";
+import { ListGroup } from "./components/ListGroup";
+import { Item } from "./components/ListGroup/Item";
 import { getDotLine } from "./helpers/getDotLine";
 import { useFileList } from "./hooks/useFileList";
 import { Content } from "./components/Content";
@@ -29,75 +34,6 @@ import { Popover } from "./components/Popover";
 import { Button } from "./components/Button";
 import { Main } from "./components/Main";
 import { constants } from "./constants";
-
-const ItemCheckbox = ({ type = "checkbox", className = "", ...rest }) => {
-  const defaultClassName = "form-check-input flex-shrink-0";
-
-  const entireClassName = [defaultClassName, className].join(
-    className.length > 0 ? " " : ""
-  );
-
-  return <input className={entireClassName} type={type} {...rest} />;
-};
-
-const ListGroupItem = ({ className = "", ...rest }) => {
-  const defaultClassName = "list-group-item d-flex gap-2";
-
-  const entireClassName = [defaultClassName, className].join(
-    className.length > 0 ? " " : ""
-  );
-
-  return <label className={entireClassName} {...rest}></label>;
-};
-
-const ListGroup = ({ className = "", style, ...rest }) => {
-  const defaultClassName = "list-group list-group-flush overflow-y-scroll";
-
-  const entireClassName = [defaultClassName, className].join(
-    className.length > 0 ? " " : ""
-  );
-
-  return (
-    <div
-      style={{ maxHeight: 200, ...style }}
-      className={entireClassName}
-      {...rest}
-    ></div>
-  );
-};
-
-const DropdownSearch = () => {
-  return (
-    <form className="p-2 mb-2 bg-body-tertiary border-bottom">
-      <input
-        placeholder="Type to filter..."
-        className="form-control"
-        autoComplete="false"
-        type="search"
-      />
-    </form>
-  );
-};
-
-const DropdownMenu = ({ children }) => {
-  return (
-    <div className="dropdown-menu d-block position-static pt-0 mx-0 rounded-3 shadow overflow-hidden w-280px">
-      <DropdownSearch></DropdownSearch>
-      {children}
-    </div>
-  );
-};
-
-const PopoverButton = ({ children }) => {
-  return (
-    <Button
-      className="dropdown-toggle w-100 shadow-sm bg-gradient d-flex align-items-center justify-content-center"
-      variant="secondary"
-    >
-      {children}
-    </Button>
-  );
-};
 
 export default function App() {
   const {
@@ -160,20 +96,6 @@ export default function App() {
 
   const onResize = (w) => setResizeWidth(w);
 
-  // ? maybe change style of calendar button + label next to it
-  // * legend hover event
-  // * dot style
-  // * legend shapes match lines with filled dots style
-  // * dot hover event
-  // * tooltip only on dot hover
-  // * stack legend
-  // * calendar popover
-  // * tooltip content (may want to remove active line as well)
-  // ! filters
-  // ? anything used as a prop or dependency should have optimal referential equality across renders
-  // ? (won't cause unnecessary rerenders if you choose to memoize components)
-  // ? and prefer using the least number of hooks required for each job, unless it is obviously inconvenient to do so
-
   return (
     <Main>
       <Content>
@@ -189,39 +111,52 @@ export default function App() {
             style={{ marginBottom: -8, marginRight: -8 }}
           >
             {columns.map(({ field: name, headerName, values }) => {
-              const rowColumns = getBestRowColumns({
-                count: columns.length,
+              const columnsPerRow = getNumberOfColumnsPerRow({
+                length: columns.length,
                 width: resizeWidth,
-              })?.rowColumns;
+              });
+
+              const allAreChecked = isChecked({ name });
+
+              const variant = allAreChecked ? "secondary" : "warning";
+
+              const width = `${Math.floor(100 / columnsPerRow)}%`;
 
               return (
                 <Popover
                   openUp={
                     <DropdownMenu>
                       <ListGroup>
+                        <Item>
+                          <Checkbox
+                            onChange={handleCheckboxChange}
+                            className="all-checkbox"
+                            checked={allAreChecked}
+                            name={name}
+                          ></Checkbox>
+                          <span>All</span>
+                        </Item>
                         {values.map((value) => (
-                          <ListGroupItem key={value}>
-                            <ItemCheckbox
+                          <Item key={value}>
+                            <Checkbox
                               checked={isChecked({ value, name })}
                               onChange={handleCheckboxChange}
                               value={value}
                               name={name}
-                            ></ItemCheckbox>
+                            ></Checkbox>
                             <span>{value}</span>
-                          </ListGroupItem>
+                          </Item>
                         ))}
                       </ListGroup>
                     </DropdownMenu>
                   }
                   openWith={
-                    <PopoverButton>
+                    <PopoverButton variant={variant}>
                       <div className="text-truncate">{headerName}</div>
                     </PopoverButton>
                   }
-                  style={{
-                    width: `${Math.floor(100 / rowColumns)}%`,
-                  }}
                   className="dropdown flex-fill pe-2 pb-2"
+                  style={{ width }}
                   key={name}
                 ></Popover>
               );
@@ -281,6 +216,15 @@ export default function App() {
   );
 }
 
+const PopoverButton = ({ className, ...rest }) => {
+  const entireClassName = getEntireClassName(
+    "dropdown-toggle w-100 shadow-sm bg-gradient d-flex align-items-center justify-content-center",
+    className
+  );
+
+  return <Button className={entireClassName} {...rest}></Button>;
+};
+
 const {
   pivotDefs: { pivotOn: xAxisDataKey },
   xAxisTickFormatter,
@@ -288,3 +232,17 @@ const {
   valueFormatter,
   xAxisPadding,
 } = constants;
+
+// * maybe change style of calendar button + label next to it
+// * legend hover event
+// * dot style
+// * legend shapes match lines with filled dots style
+// * dot hover event
+// * tooltip only on dot hover
+// * stack legend
+// * calendar popover
+// * tooltip content (may want to remove active line as well)
+// ! filters
+// ? anything used as a prop or dependency should have optimal referential equality across renders
+// ? (won't cause unnecessary rerenders if you choose to memoize components)
+// ? and prefer using the least number of hooks required for each job, unless it is obviously inconvenient to do so
