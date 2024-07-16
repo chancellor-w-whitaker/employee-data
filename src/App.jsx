@@ -222,6 +222,10 @@ export default function App() {
           )}
         </ResponsiveContainer>
       </Content>
+      <Content>
+        NOTE: Official data is based on November 1st. Available dates are based
+        on when changes occurred.
+      </Content>
     </div>
 
     // </Main>
