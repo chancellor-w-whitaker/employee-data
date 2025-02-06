@@ -9,7 +9,7 @@ import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Wrapper>
+    <Wrapper heading="Faculty/Staff Employee Data">
       <App />
     </Wrapper>
     {/* <Example></Example> */}

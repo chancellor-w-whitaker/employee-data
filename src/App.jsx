@@ -99,12 +99,7 @@ export default function App() {
 
   return (
     // <Main>
-    <div className="d-flex gap-4 flex-column">
-      <Content>
-        <h1 className="display-5 mb-0 text-center">
-          Faculty/Staff Employee Data
-        </h1>
-      </Content>
+    <>
       <Content>
         <DatePicker {...calendarProps}></DatePicker>
       </Content>
@@ -226,7 +221,7 @@ export default function App() {
         NOTE: Official data is based on November 1st. Available dates are based
         on when changes occurred.
       </Content>
-    </div>
+    </>
 
     // </Main>
   );
